@@ -4,6 +4,7 @@ Run locally from the project directory:
     uvicorn app:app --reload
 """
 
+import shutil
 from contextlib import asynccontextmanager
 from io import BytesIO
 from pathlib import Path
@@ -44,6 +45,15 @@ class AnalyzeResponse(PredictionResponse):
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff"}
+
+
+def ensure_tesseract_available() -> None:
+    """Fail with a clear message when the system OCR engine is missing."""
+    if shutil.which("tesseract") is None:
+        raise RuntimeError(
+            "Image OCR is unavailable because the Tesseract OCR system package is not installed. "
+            "On Render, install it during build with: apt-get update && apt-get install -y tesseract-ocr"
+        )
 
 
 class ResumeRolePredictor:
@@ -144,20 +154,24 @@ def extract_uploaded_text(filename: str, content: bytes) -> str:
     if extension == ".pdf":
         reader = PdfReader(BytesIO(content))
         return "\n".join(page.extract_text() or "" for page in reader.pages)
+
     if pytesseract is None:
         raise RuntimeError(
-            "Image OCR is disabled in this deployment because the Tesseract engine is not available in the serverless environment. "
-            "Use PDF or pasted text input instead."
+            "Image OCR is unavailable because the Python OCR wrapper is not installed. "
+            "Install pytesseract and the Tesseract system package."
         )
 
     try:
+        ensure_tesseract_available()
         return pytesseract.image_to_string(Image.open(BytesIO(content)))
+    except RuntimeError:
+        raise
     except Exception as error:
         if hasattr(pytesseract, "TesseractNotFoundError"):
             tesseract_error = pytesseract.TesseractNotFoundError
             if isinstance(error, tesseract_error):
                 raise RuntimeError(
-                    "Image OCR requires the Tesseract engine to be installed and available on PATH."
+                    "Image OCR requires the Tesseract system executable to be installed and available on PATH."
                 ) from error
         raise ValueError("The uploaded image could not be read.") from error
 
