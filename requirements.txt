@@ -13,4 +13,5 @@ scikit-learn==1.9.0
 joblib==1.5.3
 
 pillow==12.3.0
+pytesseract==0.3.13
 pypdf==6.0.0

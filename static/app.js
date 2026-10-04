@@ -60,31 +60,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function setLoading(isLoading) {
+        analyzeBtn.disabled = isLoading;
+        analyzeBtn.textContent = isLoading ? 'Analyzing...' : 'Analyze Resume';
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.classList.toggle('hidden', !isLoading);
+        }
+    }
+
     analyzeBtn.addEventListener('click', async () => {
         errorBox.classList.add('hidden');
         resultsSection.classList.add('hidden');
-        
+
         const text = resumeInput.value.trim();
         if (!text && !currentFile) {
             showError("Please paste a resume or upload a file.");
             return;
         }
 
-        analyzeBtn.disabled = true;
-        analyzeBtn.textContent = 'Analyzing...';
+        setLoading(true);
 
         try {
             let result;
             if (currentFile) {
-                // If the backend had a /analyze-file we'd use it, 
-                // but since it only has /predict-file, we'll fall back to standard text extraction
-                // for the demo, or just use /predict-file.
-                // Wait, we didn't add /analyze-file. Let's just use /predict-file for now if file.
-                // Or better, let's just assume the user pastes text for the full analysis demo.
-                showError("Full analysis currently supports text input. Please paste text.");
-                analyzeBtn.disabled = false;
-                analyzeBtn.textContent = 'Analyze Resume';
-                return;
+                const formData = new FormData();
+                formData.append('upload', currentFile, currentFile.name);
+
+                const response = await fetch('/predict-file', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.detail || "File analysis failed.");
+                }
+                result = await response.json();
             } else {
                 const response = await fetch('/analyze', {
                     method: 'POST',
@@ -102,10 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderResults(result);
 
         } catch (err) {
-            showError(err.message);
+            showError(err.message || 'Analysis failed.');
         } finally {
-            analyzeBtn.disabled = false;
-            analyzeBtn.textContent = 'Analyze Resume';
+            setLoading(false);
         }
     });
 

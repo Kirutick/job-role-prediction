@@ -234,9 +234,9 @@ def analyze(request: PredictionRequest, application_request: Request) -> Analyze
     return AnalyzeResponse(**result)
 
 
-@app.post("/predict-file", response_model=PredictionResponse)
-async def predict_file(application_request: Request, upload: UploadFile = File(...)) -> PredictionResponse:
-    """Extract text from a PDF/image upload and predict its job role."""
+@app.post("/predict-file", response_model=AnalyzeResponse)
+async def predict_file(application_request: Request, upload: UploadFile = File(...)) -> AnalyzeResponse:
+    """Extract text from a PDF/image upload and return the same analysis payload as text input."""
     filename = upload.filename or ""
     extension = Path(filename).suffix.lower()
     if extension not in ALLOWED_EXTENSIONS:
@@ -250,15 +250,17 @@ async def predict_file(application_request: Request, upload: UploadFile = File(.
 
     try:
         extracted_text = extract_uploaded_text(filename, content)
+        if not extracted_text or not extracted_text.strip():
+            raise ValueError("No readable text could be extracted from the uploaded file.")
         predictor: ResumeRolePredictor = get_predictor(application_request)
-        result = predictor.predict(extracted_text)
+        result = predictor.analyze(extracted_text)
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     except Exception as error:
         raise HTTPException(status_code=500, detail="File prediction failed.") from error
-    return PredictionResponse(**result)
+    return AnalyzeResponse(**result)
 
 
 @app.get("/health")
