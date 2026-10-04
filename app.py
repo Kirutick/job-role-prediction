@@ -51,17 +51,20 @@ class ResumeRolePredictor:
 
     def __init__(self) -> None:
         self.model_type = "tfidf"
+        self.model = None
+        self.vectorizer = None
+        self.label_classes = []
         self.svd = None
+        self.screening_engine = get_screening_engine()
         
         metadata_path = BASE_DIR / "metadata.json"
         models_dir = BASE_DIR / "models"
         
-        # Determine which model to load
-        if metadata_path.exists():
-            meta = json.loads(metadata_path.read_text(encoding="utf-8"))
-            self.model_type = meta.get("active_model", "tfidf")
-            
         try:
+            if metadata_path.exists():
+                meta = json.loads(metadata_path.read_text(encoding="utf-8"))
+                self.model_type = meta.get("active_model", "tfidf")
+
             if self.model_type == "semantic":
                 print("Loading LSA Semantic Model...")
                 self.model = joblib.load(models_dir / "semantic_model.pkl")
@@ -74,13 +77,25 @@ class ResumeRolePredictor:
                 self.vectorizer = joblib.load(models_dir / "tfidf_vectorizer.pkl")
                 self.label_classes = joblib.load(models_dir / "tfidf_label_classes.pkl")
         except FileNotFoundError:
-            print("New models not found, loading original artifacts as fallback.")
-            self.model, self.vectorizer, self.label_classes = _load_artifacts()
-            self.model_type = "tfidf"
-            
-        self.screening_engine = get_screening_engine()
+            try:
+                print("New models not found, loading original artifacts as fallback.")
+                self.model, self.vectorizer, self.label_classes = _load_artifacts()
+                self.model_type = "tfidf"
+            except Exception as error:
+                raise RuntimeError(
+                    "Model artifacts are unavailable in this deployment. The serverless bundle is missing required inference files."
+                ) from error
+
+        if self.model is None or self.vectorizer is None:
+            raise RuntimeError(
+                "Model artifacts are unavailable in this deployment. The serverless bundle is missing required inference files."
+            )
 
     def predict(self, resume_text: str) -> dict[str, object]:
+        if self.model is None or self.vectorizer is None:
+            raise RuntimeError(
+                "Model artifacts are unavailable in this deployment. The serverless bundle is missing required inference files."
+            )
         if not resume_text.strip():
             raise ValueError("resume_text cannot be empty or whitespace-only.")
 
@@ -151,14 +166,23 @@ def get_predictor(application_request: Request) -> ResumeRolePredictor:
     """Ensure startup-loaded prediction artifacts exist even in lightweight serverless/test execution."""
     predictor = getattr(application_request.app.state, "predictor", None)
     if predictor is None:
-        predictor = ResumeRolePredictor()
+        try:
+            predictor = ResumeRolePredictor()
+        except RuntimeError as error:
+            raise RuntimeError(
+                "Model artifacts are unavailable in this deployment. The serverless bundle is missing required inference files."
+            ) from error
         application_request.app.state.predictor = predictor
     return predictor
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    application.state.predictor = ResumeRolePredictor()
+    application.state.predictor = None
+    try:
+        application.state.predictor = ResumeRolePredictor()
+    except Exception as error:
+        print(f"Startup model load failed: {error}")
     yield
 
 
@@ -184,6 +208,8 @@ def predict(request: PredictionRequest, application_request: Request) -> Predict
     predictor: ResumeRolePredictor = get_predictor(application_request)
     try:
         result = predictor.predict(request.resume_text)
+    except RuntimeError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     except Exception as error:
@@ -199,6 +225,8 @@ def analyze(request: PredictionRequest, application_request: Request) -> Analyze
     predictor: ResumeRolePredictor = get_predictor(application_request)
     try:
         result = predictor.analyze(request.resume_text)
+    except RuntimeError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     except Exception as error:
@@ -243,7 +271,14 @@ def health(application_request: Request) -> dict[str, Any]:
             application_request.app.state.predictor = predictor
         except Exception:
             predictor = None
-    return {"status": "ok", "model_loaded": predictor is not None}
+    return {
+        "status": "ok",
+        "model_loaded": predictor is not None,
+        "message": (
+            "Model artifacts unavailable in this serverless deployment."
+            if predictor is None else "Model ready."
+        ),
+    }
 
 
 app.mount("/", StaticFiles(directory=str(BASE_DIR / "static"), html=True), name="frontend")
