@@ -1,0 +1,39 @@
+# Exclude heavy development files from the serverless deployment bundle.
+# Keep only the files needed for runtime inference and the static frontend.
+
+**/.git/**
+**/.venv/**
+**/__pycache__/**
+**/.vscode/**
+**/eda_images/**
+**/results/**
+**/splits/**
+**/tests/**
+**/data/candidates/**
+**/data/genuine/**
+**/*.ipynb
+**/*.csv
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.bmp
+**/*.tiff
+**/*.svg
+**/*.txt
+**/*.md
+**/*.json
+
+# Keep the actual runtime artifacts needed by inference.
+!job_role_model.pkl
+!label_classes.pkl
+!tfidf_vectorizer.pkl
+!metadata.json
+!static/**
+!data/role_requirements.json
+!data/screening_weights.json
+!skills_extractor.py
+!screening_engine.py
+!preprocess_resume.py
+!predict_role.py
+!app.py

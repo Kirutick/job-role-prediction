@@ -13,8 +13,12 @@ from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 from pypdf import PdfReader
-import pytesseract
 from pydantic import BaseModel, Field
+
+try:
+    import pytesseract
+except ImportError:  # pragma: no cover - optional on serverless deployments
+    pytesseract = None
 
 from predict_role import _load_artifacts
 from preprocess_resume import clean_text
@@ -125,14 +129,31 @@ def extract_uploaded_text(filename: str, content: bytes) -> str:
     if extension == ".pdf":
         reader = PdfReader(BytesIO(content))
         return "\n".join(page.extract_text() or "" for page in reader.pages)
+    if pytesseract is None:
+        raise RuntimeError(
+            "Image OCR is disabled in this deployment because the Tesseract engine is not available in the serverless environment. "
+            "Use PDF or pasted text input instead."
+        )
+
     try:
         return pytesseract.image_to_string(Image.open(BytesIO(content)))
-    except pytesseract.TesseractNotFoundError as error:
-        raise RuntimeError(
-            "Image OCR requires the Tesseract engine to be installed and available on PATH."
-        ) from error
     except Exception as error:
+        if hasattr(pytesseract, "TesseractNotFoundError"):
+            tesseract_error = pytesseract.TesseractNotFoundError
+            if isinstance(error, tesseract_error):
+                raise RuntimeError(
+                    "Image OCR requires the Tesseract engine to be installed and available on PATH."
+                ) from error
         raise ValueError("The uploaded image could not be read.") from error
+
+
+def get_predictor(application_request: Request) -> ResumeRolePredictor:
+    """Ensure startup-loaded prediction artifacts exist even in lightweight serverless/test execution."""
+    predictor = getattr(application_request.app.state, "predictor", None)
+    if predictor is None:
+        predictor = ResumeRolePredictor()
+        application_request.app.state.predictor = predictor
+    return predictor
 
 
 @asynccontextmanager
@@ -160,7 +181,7 @@ def predict(request: PredictionRequest, application_request: Request) -> Predict
     if not request.resume_text.strip():
         raise HTTPException(status_code=422, detail="resume_text cannot be empty or whitespace-only.")
 
-    predictor: ResumeRolePredictor = application_request.app.state.predictor
+    predictor: ResumeRolePredictor = get_predictor(application_request)
     try:
         result = predictor.predict(request.resume_text)
     except ValueError as error:
@@ -175,7 +196,7 @@ def analyze(request: PredictionRequest, application_request: Request) -> Analyze
     if not request.resume_text.strip():
         raise HTTPException(status_code=422, detail="resume_text cannot be empty or whitespace-only.")
 
-    predictor: ResumeRolePredictor = application_request.app.state.predictor
+    predictor: ResumeRolePredictor = get_predictor(application_request)
     try:
         result = predictor.analyze(request.resume_text)
     except ValueError as error:
@@ -201,7 +222,7 @@ async def predict_file(application_request: Request, upload: UploadFile = File(.
 
     try:
         extracted_text = extract_uploaded_text(filename, content)
-        predictor: ResumeRolePredictor = application_request.app.state.predictor
+        predictor: ResumeRolePredictor = get_predictor(application_request)
         result = predictor.predict(extracted_text)
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
@@ -215,7 +236,14 @@ async def predict_file(application_request: Request, upload: UploadFile = File(.
 @app.get("/health")
 def health(application_request: Request) -> dict[str, Any]:
     """Return a simple readiness response for local checks."""
-    return {"status": "ok", "model_loaded": hasattr(application_request.app.state, "predictor")}
+    predictor = getattr(application_request.app.state, "predictor", None)
+    if predictor is None:
+        try:
+            predictor = ResumeRolePredictor()
+            application_request.app.state.predictor = predictor
+        except Exception:
+            predictor = None
+    return {"status": "ok", "model_loaded": predictor is not None}
 
 
 app.mount("/", StaticFiles(directory=str(BASE_DIR / "static"), html=True), name="frontend")

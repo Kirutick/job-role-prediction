@@ -1,0 +1,30 @@
+# Development and research dependencies for training, evaluation, data audits, and experiments.
+# Keep this separate from the production inference bundle.
+
+pandas==2.3.3
+numpy==2.2.6
+scipy==1.18.0
+scikit-learn==1.9.0
+joblib==1.5.3
+
+nltk==3.10.2
+regex==2026.7.19
+
+matplotlib==3.11.1
+seaborn==0.13.2
+
+jupyterlab==4.6.3
+threadpoolctl==3.6.0
+tqdm==4.70.0
+
+fastapi==0.139.2
+uvicorn[standard]==0.51.0
+python-multipart==0.0.20
+pypdf==6.0.0
+pillow==12.3.0
+pytesseract
+
+kagglehub
+huggingface_hub
+
+datasets

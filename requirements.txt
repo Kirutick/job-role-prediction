@@ -1,40 +1,15 @@
-# Requirements for: AI-Powered Resume Screening & Job Role Prediction
-# ML Backend Pipeline
-#
-# Install with:  pip install -r requirements.txt
-# Python version: 3.10+
-#
-# Versions verified against the development environment (python audit_dataset.py).
-# Run `pip freeze` after install to capture any transitive dependency changes.
+# Production inference requirements for the resume-role API.
+# Keep this install lightweight for serverless deployment.
+# OCR is intentionally excluded from the production bundle; image OCR is handled separately.
 
-# --- Data & Numerics ---
-pandas==2.3.3
 numpy==2.2.6
-
-# --- Machine Learning ---
+scipy==1.18.0
 scikit-learn==1.9.0
-scipy==1.18.0          # Required by scikit-learn
-joblib==1.5.3          # Model serialization
+joblib==1.5.3
 
-# --- NLP ---
-nltk==3.10.2
-regex==2026.7.19       # Required by nltk
-
-# --- Visualisation ---
-matplotlib==3.11.1
-seaborn==0.13.2
-
-# --- Jupyter ---
-jupyterlab==4.6.3      # Notebook environment (already installed)
-
-# --- Utilities (transitive, pinned for reproducibility) ---
-threadpoolctl==3.6.0
-tqdm==4.70.0
 pillow==12.3.0
+pypdf==6.0.0
 
-# --- API ---
 fastapi==0.139.2
 uvicorn[standard]==0.51.0
-python-multipart
-pypdf
-pytesseract
+python-multipart==0.0.20
