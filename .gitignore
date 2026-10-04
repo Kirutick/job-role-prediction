@@ -1,0 +1,38 @@
+# Local environment and editor files
+.venv/
+.vercel/
+.vscode/
+__pycache__/
+*.pyc
+
+# Dataset, training, and audit artifacts
+*.csv
+*.ipynb
+*.txt
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.bmp
+*.tiff
+*.svg
+
+# Large or transient build outputs
+results/
+eda_images/
+splits/
+tests/
+
+# Keep only the runtime model and app assets
+!job_role_model.pkl
+!label_classes.pkl
+!tfidf_vectorizer.pkl
+!metadata.json
+!data/role_requirements.json
+!data/screening_weights.json
+!static/**
+!app.py
+!predict_role.py
+!preprocess_resume.py
+!screening_engine.py
+!skills_extractor.py

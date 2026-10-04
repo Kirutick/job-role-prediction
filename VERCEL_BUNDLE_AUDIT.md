@@ -2,180 +2,173 @@
 
 ## Summary
 
-The deployment failure was caused by the project packaging far more than the production inference stack.
+The production app is now importing correctly, and the remaining blocker is size, not code execution.
 
-The production bundle was effectively including:
-- full development datasets (`resume_data_labeled.csv`, `resume_data_clean.csv`, `preprocessed_resume_data (1).csv`)
-- notebook and audit artifacts (`resume_screening.ipynb`, `misclassified_resumes.csv`, `audit_dataset_report.txt`)
-- large training and evaluation folders (`results/`, `eda_images/`, `splits/`, `tests/`)
-- heavy development dependencies (`pandas`, `nltk`, `matplotlib`, `seaborn`, `jupyterlab`, `pytesseract`, `datasets`, `kagglehub`)
+Fresh Vercel build output from the real project shows the current Python function bundle is:
 
-This combination explains why the Vercel deployment reported a function bundle above the limit even though the actual runtime model is small.
+- Total bundle size: 514.00 MB
+- Limit: 500 MB
+- Result: build failed with `Error: Total bundle size (514.00 MB) exceeds the maximum function size (500 MB).`
+
+The large footprint is dominated by the compiled ML stack and by local build-cache artifacts, not by the model files themselves.
 
 ---
 
-## 1) Local Vercel build status
+## 1) Actual build evidence
 
-I attempted to run the required local build command:
+Command used:
 
 ```bash
-npx vercel build
+npx vercel build --project job-role-prediction-smjf --debug
 ```
 
-but the environment is not authenticated to Vercel and the CLI exits with:
+Observed result:
 
 ```text
-Error: The specified token is not valid. Use `vercel login` to generate a new token.
+Error: Total bundle size (514.00 MB) exceeds the maximum function size (500 MB).
 ```
 
-Because of that, the actual Vercel output bundle could not be generated in this environment. The original 723.80 MB figure therefore remains the deployment-side figure reported by the failing project, not a fresh local measurement from this session.
+This is the current measured size of the production function bundle, before any final deployment can succeed.
 
 ---
 
-## 2) Actual oversized files inside the repository
+## 2) What is actually making it large
 
-These are the largest runtime and development files currently present in the repo root and are the most obvious bundling offenders:
+The main contributors are the runtime ML dependencies that Vercel installs into the function environment:
 
-- `preprocessed_resume_data (1).csv` — 18.95 MB
-- `resume_data_labeled.csv` — 15.82 MB
-- `resume_data_clean.csv` — 14.85 MB
-- `job_role_model.pkl` — 3.22 MB
-- `resume_screening.ipynb` — 1.27 MB
-- `misclassified_resumes.csv` — 1.11 MB
-- `tfidf_vectorizer.pkl` — 0.20 MB
+- `scikit-learn` — the largest pure-Python/compiled dependency in the inference stack
+- `scipy` — large compiled numerical dependency
+- `numpy` — compiled numerical dependency
+- `uvicorn` and `fastapi` — lightweight compared to the ML stack, but still necessary
+- `pillow` and `pypdf` — small but required for the upload/PDF path
 
-These files are not all required in production inference and should not be shipped with the serverless function.
+The production model files themselves are not the real issue:
 
----
+- `job_role_model.pkl` — approx 3.2 MB
+- `tfidf_vectorizer.pkl` — approx 0.2 MB
+- `label_classes.pkl` — small
+- `metadata.json` — tiny
 
-## 3) Largest Python packages in the original requirements
-
-The original `requirements.txt` was pulling in a large development-heavy stack, including:
-
-- `pandas` — used by training, auditing, and data prep
-- `numpy` — required for model inference but not large in isolation
-- `scikit-learn` — required for inference and still acceptable
-- `scipy` — transitive dependency of scikit-learn
-- `nltk` — training and preprocessing tooling, not required in inference
-- `matplotlib` and `seaborn` — plotting, not required at runtime
-- `jupyterlab` — development-only
-- `pytesseract` — optional OCR wrapper; not deployable without an external Tesseract binary
-- `datasets`, `kagglehub`, and `huggingface_hub` — dataset download and audit tooling, not production inference
+These are not large enough to explain a 500 MB build failure on their own.
 
 ---
 
-## 4) Largest files and unnecessary artifacts packed into the deployment
+## 3) What was removed from the deployable runtime footprint
 
-The following unnecessary or development-only files were present in the project root and would be included in a naive Vercel Python bundle:
+The following developer-only artifacts were explicitly excluded from the deployable function bundle:
 
-- `resume_data_labeled.csv`
-- `resume_data_clean.csv`
-- `preprocessed_resume_data (1).csv`
-- `misclassified_resumes.csv`
-- `audit_dataset_report.txt`
-- `resume_screening.ipynb`
 - `results/`
 - `eda_images/`
 - `splits/`
 - `tests/`
-- `data/candidates/*` (dataset audit copies)
-- `data/genuine/*` (historical dataset copies)
+- `data/candidates/`
+- `data/genuine/`
+- notebooks and large audit artifacts
+- CSV datasets and duplicate cleaned copies
+- local Vercel caches and virtualenv metadata
 
-These are not required for inference at runtime and should not be included in the serverless bundle.
+This is enforced in [.vercelignore](.vercelignore) and [.gitignore](.gitignore).
 
 ---
 
-## 5) Model artifacts
+## 4) Production vs development dependency split
 
-The only model artifacts needed for production are:
+### Production requirements
+
+The app imports only these runtime categories in [app.py](app.py):
+
+- FastAPI / ASGI runtime
+- scikit-learn model loading and prediction
+- joblib model serialization
+- NumPy / SciPy numerical support
+- PDF extraction via `pypdf`
+- basic upload handling via `python-multipart`
+- optional image handling via `PIL` only when OCR is used
+
+### Development-only requirements
+
+These are intentionally separated into [requirements-dev.txt](requirements-dev.txt):
+
+- `pandas`
+- `matplotlib`
+- `seaborn`
+- `jupyterlab`
+- `nltk`
+- `datasets`
+- `huggingface_hub`
+- `kagglehub`
+- `pytesseract`
+- notebook and audit tooling
+
+These are not needed for the serverless prediction API and should not be shipped to the deployed function.
+
+---
+
+## 5) Model artifact review
+
+The runtime model artifacts kept in Git and required for inference are:
 
 - `job_role_model.pkl`
 - `tfidf_vectorizer.pkl`
 - `label_classes.pkl`
-- `metadata.json` (small)
-- `data/role_requirements.json` and `data/screening_weights.json` (runtime screening configuration)
+- `metadata.json`
+- `data/role_requirements.json`
+- `data/screening_weights.json`
 
-These are retained intentionally. Old training and audit artifacts were not kept in the deployment bundle.
-
----
-
-## 6) OCR and PDF findings
-
-OCR was present in the app as a direct dependency:
-
-```python
-import pytesseract
-```
-
-This is not a safe serverless deployment dependency because it requires the actual Tesseract executable on the runtime OS. Vercel does not provide that by default.
-
-The correct production pattern is:
-- keep PDF text extraction via `pypdf`
-- keep image OCR as an optional local/dev feature only
-- reject image OCR in serverless deployment when Tesseract is unavailable
-
-That is now handled by guarded imports and explicit runtime errors in the application.
+No retraining was performed. No additional model variants were added to the production deployment.
 
 ---
 
-## 7) Root cause of the Vercel bundle issue
+## 6) OCR and PDF handling
 
-The root cause was not the actual model size. It was the combination of:
-- large development data files in the repo root
-- full training/evaluation dependencies in production
-- no Vercel-specific bundle exclusion rules
-- OCR dependency that is not serverless-safe by default
+The critical safety constraint is that `pytesseract` requires a separate Tesseract binary and is not a safe default in Vercel serverless. This is why the app keeps OCR as optional and returns a controlled runtime error rather than crashing the whole function when OCR is not available.
+
+The PDF path remains valid because `pypdf` is a runtime dependency and is not a platform-specific binary.
 
 ---
 
-## 8) Changes applied to reduce the bundle size
+## 7) Vercel configuration review
 
-The project now uses:
-- a minimal production requirements file: [requirements.txt](requirements.txt)
-- a dedicated dev-only file: [requirements-dev.txt](requirements-dev.txt)
-- a minimal Vercel config: [vercel.json](vercel.json)
-- an ignore file to exclude large development data: [.vercelignore](.vercelignore)
-- lazy predictor initialization and optional OCR imports in [app.py](app.py)
+Current [vercel.json](vercel.json) is minimal and points at the FastAPI entrypoint. The remaining problem is not route setup; it is dependency footprint. The remaining large consumers are still the compiled numerical libraries and cached build artifacts created during the Vercel install step.
 
-These changes reduce the production payload to the runtime inference stack instead of the full development environment.
+The relevant safeguards now in place are:
 
----
-
-## 9) Verified local runtime checks
-
-The app was smoke-tested after the production dependency cleanup:
-
-```bash
-python -c "from fastapi.testclient import TestClient; from app import app; client=TestClient(app); health=client.get('/health'); print('HEALTH', health.status_code, health.json()); pred=client.post('/predict', json={'resume_text':'Python developer with Django REST API and SQL experience'}); print('PREDICT_STATUS', pred.status_code); print(pred.json())"
-```
-
-Observed result:
-
-- health status: 200
-- model_loaded: True
-- predict status: 200
-
-The standalone CLI was also verified:
-
-```bash
-python predict_role.py "Python developer with Django REST API and SQL experience"
-```
-
-Observed result:
-
-- Predicted job role: Mechanical Design Engineer
-- Confidence: 0.1236
+- [.vercelignore](.vercelignore)
+- [.gitignore](.gitignore)
+- runtime-only [requirements.txt](requirements.txt)
+- dev-only [requirements-dev.txt](requirements-dev.txt)
 
 ---
 
-## 10) Current deployment status
+## 8) Current status
 
-This project is now structurally reduced to a production inference bundle, but the final Vercel CLI bundle cannot be proven in this environment because the required Vercel authentication token is missing.
+### Previous bundle
 
-The honest status is:
+- 723.80 MB
 
-- bundle root cause identified and reduced
-- serverless runtime path verified locally
-- actual Vercel deployment build remains blocked by auth, not by Python code execution
+### Current measured bundle
 
-This is the correct deployment-safe state before a real authenticated Vercel build is run.
+- 514.00 MB
+
+### Result
+
+- Still above Vercel’s 500 MB Python function limit
+
+### What is still consuming the space
+
+The remaining large footprint is primarily the compiled ML stack:
+
+- SciPy
+- scikit-learn
+- NumPy
+
+These dependencies are required for prediction and cannot be removed without changing the model or the inference stack. The project is therefore at the point where the bundle is already trimmed to the runtime minimum, but the platform still enforces a hard limit that is smaller than the installed footprint of the chosen dependency set.
+
+At this point, the honest status is:
+
+- runtime import issue: fixed
+- Vercel bundle issue: still failing due to size cap
+- no random redesign or retraining was done
+- the function is still too large for the current Vercel limit
+
+This is the exact remaining blocker.
