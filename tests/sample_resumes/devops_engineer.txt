@@ -1,0 +1,8 @@
+DevOps Engineer passionate about automation, scalability, and cloud architecture.
+Over 6 years of experience bridging the gap between development and operations.
+Deep expertise in Linux administration and bash scripting.
+Extensive experience with AWS (EC2, S3, RDS, IAM) and Infrastructure as Code using Terraform.
+Proficient in building CI/CD pipelines using GitLab CI and Jenkins.
+Hands-on experience with containerization (Docker) and orchestration (Kubernetes).
+Familiar with configuration management tools like Ansible.
+B.Tech in Computer Engineering.

@@ -1,0 +1,6 @@
+{
+  "role_match": 0.40,
+  "skills_match": 0.40,
+  "experience_match": 0.15,
+  "education_match": 0.05
+}

@@ -1,0 +1,92 @@
+{
+  "Data Scientist": {
+    "skills": ["Python", "SQL", "Pandas", "Scikit-learn", "Machine Learning", "Data Analysis", "Data Visualization", "Tableau", "TensorFlow", "Statistics"]
+  },
+  "Software Engineer": {
+    "skills": ["Java", "Python", "C++", "SQL", "JavaScript", "React", "Node.js", "Git", "REST APIs", "Agile", "Linux", "Docker"]
+  },
+  "Data Analyst": {
+    "skills": ["SQL", "Excel", "Data Analysis", "Tableau", "Power BI", "Python", "Data Visualization", "Dashboards", "Reporting"]
+  },
+  "Network Engineer": {
+    "skills": ["Cisco", "Routing", "Switching", "TCP/IP", "Firewalls", "BGP", "OSPF", "VPN", "Linux", "Troubleshooting", "Network Security"]
+  },
+  "DevOps Engineer": {
+    "skills": ["Linux", "Docker", "Kubernetes", "CI/CD", "Jenkins", "AWS", "Python", "Bash", "Terraform", "Ansible", "Git"]
+  },
+  "Machine Learning Engineer": {
+    "skills": ["Python", "Machine Learning", "Deep Learning", "TensorFlow", "PyTorch", "NLP", "Scikit-learn", "AWS", "Docker", "SQL"]
+  },
+  "Data Engineer": {
+    "skills": ["SQL", "Python", "ETL", "Spark", "Hadoop", "AWS", "Data Warehousing", "Airflow", "Kafka", "Database Management"]
+  },
+  "Full Stack Developer": {
+    "skills": ["JavaScript", "React", "Node.js", "HTML", "CSS", "SQL", "MongoDB", "Python", "Git", "REST APIs"]
+  },
+  "iOS Developer": {
+    "skills": ["Swift", "Objective-C", "iOS SDK", "Xcode", "Git", "REST APIs", "Core Data", "UI/UX Design", "Agile"]
+  },
+  "Civil/Structural Engineer": {
+    "skills": ["AutoCAD", "Structural Analysis", "Revit", "Project Management", "Construction Management", "Design", "Civil Engineering"]
+  },
+  "Civil/Environmental Engineer": {
+    "skills": ["AutoCAD", "Environmental Compliance", "Project Management", "Water Treatment", "Sustainability", "Civil Engineering"]
+  },
+  "Construction Manager": {
+    "skills": ["Project Management", "Construction Management", "Scheduling", "Budgeting", "Contract Negotiation", "AutoCAD", "OSHA", "Safety"]
+  },
+  "Mechanical Design Engineer": {
+    "skills": ["SolidWorks", "AutoCAD", "Mechanical Design", "CAD", "Manufacturing", "Product Design", "Engineering", "Prototyping"]
+  },
+  "Maintenance Engineer": {
+    "skills": ["Preventive Maintenance", "Troubleshooting", "Equipment Maintenance", "Mechanical Engineering", "Safety", "Electrical", "Pneumatics"]
+  },
+  "HR Manager": {
+    "skills": ["Human Resources", "Recruiting", "Employee Relations", "Performance Management", "Onboarding", "Training", "Payroll", "HRIS"]
+  },
+  "HR & Recruitment Specialist": {
+    "skills": ["Recruiting", "Sourcing", "Interviewing", "Onboarding", "Applicant Tracking Systems", "Human Resources", "Talent Acquisition"]
+  },
+  "Database Administrator": {
+    "skills": ["SQL", "Database Administration", "Oracle", "SQL Server", "MySQL", "Performance Tuning", "Backup and Recovery", "Linux"]
+  },
+  "IT Infrastructure Engineer": {
+    "skills": ["Windows Server", "Linux", "Active Directory", "VMware", "Networking", "Troubleshooting", "Cloud", "Security"]
+  },
+  "IT Support Engineer": {
+    "skills": ["Troubleshooting", "Help Desk", "Windows", "Active Directory", "Hardware", "Software Installation", "Customer Service", "Networking"]
+  },
+  "IT Systems Admin": {
+    "skills": ["Windows Server", "Active Directory", "Linux", "VMware", "Troubleshooting", "System Administration", "Networking", "Backup"]
+  },
+  "Apparel Sourcing Manager": {
+    "skills": ["Sourcing", "Supply Chain", "Vendor Management", "Negotiation", "Merchandising", "Product Development", "Logistics"]
+  },
+  "Marketing Manager": {
+    "skills": ["Marketing Strategy", "Digital Marketing", "Social Media", "SEO", "Project Management", "Content Creation", "Analytics", "Campaign Management"]
+  },
+  "Digital Marketing Manager": {
+    "skills": ["Digital Marketing", "SEO", "SEM", "Google Analytics", "Social Media Marketing", "Email Marketing", "Content Marketing", "Campaign Management"]
+  },
+  "Bank Audit Officer": {
+    "skills": ["Auditing", "Internal Audit", "Risk Management", "Compliance", "Banking", "Financial Analysis", "Accounting"]
+  },
+  "Admin & Safety Officer": {
+    "skills": ["Safety Management", "OSHA", "Risk Assessment", "Administration", "Compliance", "Training", "Incident Investigation"]
+  },
+  "Management Trainee": {
+    "skills": ["Project Management", "Leadership", "Communication", "Data Analysis", "Microsoft Office", "Problem Solving", "Teamwork"]
+  },
+  "Internal Auditor": {
+    "skills": ["Internal Audit", "Risk Management", "Compliance", "Accounting", "Auditing", "Financial Reporting", "SOX"]
+  },
+  "VAT & Finance Officer": {
+    "skills": ["Accounting", "Tax", "Financial Reporting", "Excel", "VAT", "Reconciliation", "Financial Analysis", "Bookkeeping"]
+  },
+  "Senior ML/NLP Engineer": {
+    "skills": ["Python", "Machine Learning", "NLP", "Deep Learning", "TensorFlow", "PyTorch", "Transformers", "Data Science", "Algorithm Design"]
+  },
+  "AI & Deep Learning Engineer": {
+    "skills": ["Python", "Deep Learning", "Machine Learning", "TensorFlow", "PyTorch", "Computer Vision", "NLP", "Neural Networks", "C++"]
+  }
+}

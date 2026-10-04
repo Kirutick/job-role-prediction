@@ -1,0 +1,7 @@
+Dedicated Network Engineer with 5 years of experience managing enterprise network infrastructure.
+Certified Cisco Network Professional (CCNP).
+Expert in configuring and troubleshooting Cisco routers and switches.
+In-depth knowledge of routing protocols including OSPF, BGP, and EIGRP.
+Experience setting up VPNs, firewalls (Palo Alto, Fortinet), and ensuring network security.
+Proficient in network monitoring tools like SolarWinds and Wireshark.
+Bachelor's Degree in Information Technology.

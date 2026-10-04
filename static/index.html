@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoleSignal — ML Resume Screening</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">Role<span>Signal</span></div>
+            <div class="badge">ML Beta</div>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <h2>Analyze Candidate Resume</h2>
+                <p class="subtitle">Paste raw text or drag and drop a PDF/Image.</p>
+                
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" hidden>
+                    <div class="upload-icon">📄</div>
+                    <p>Click to upload or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span></p>
+                </div>
+
+                <div class="text-input-container">
+                    <textarea id="resumeInput" placeholder="Or paste resume text here..."></textarea>
+                </div>
+
+                <button id="analyzeBtn" class="primary-btn">Analyze Resume</button>
+                <div id="loader" class="loader hidden"></div>
+                <div id="errorBox" class="error-box hidden"></div>
+            </div>
+
+            <div id="resultsSection" class="results-section hidden">
+                <div class="result-header">
+                    <h2>Analysis Results</h2>
+                    <div class="disclaimer-badge">Demo Heuristic - Not a Hiring Decision</div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="card prediction-card">
+                        <h3>Predicted Role</h3>
+                        <div class="primary-prediction">
+                            <span id="predictedRole" class="role-name">Software Engineer</span>
+                            <span id="confidence" class="confidence-val">34% Match</span>
+                        </div>
+                        
+                        <div class="top-predictions" id="topPredictionsList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="card screening-card">
+                        <h3>Screening Breakdown</h3>
+                        <div class="score-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                              <path class="circle" id="scoreCirclePath" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                              <text x="18" y="20.35" class="percentage" id="finalScorePct">0%</text>
+                            </svg>
+                        </div>
+                        
+                        <div class="breakdown-bars" id="breakdownBars">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="card skills-card full-width">
+                        <h3>Skills Extraction</h3>
+                        <div class="skills-group">
+                            <h4>Detected Skills</h4>
+                            <div class="badge-container" id="detectedSkills">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="skills-group">
+                            <h4>Missing Common Skills <span class="tooltip-icon" title="Skills commonly found in this role, but missing from text. Does not mean candidate lacks them.">?</span></h4>
+                            <div class="badge-container missing" id="missingSkills">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/app.js"></script>
+</body>
+</html>

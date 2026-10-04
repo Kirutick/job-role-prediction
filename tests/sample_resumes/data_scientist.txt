@@ -1,0 +1,7 @@
+Experienced Data Scientist with a proven track record of building predictive models and driving business decisions through data.
+Proficient in Python, SQL, and R.
+Extensive experience using Scikit-learn for machine learning and Pandas for data manipulation.
+Created interactive dashboards in Tableau to visualize customer churn.
+Familiar with statistical analysis, A/B testing, and hypothesis testing.
+Recently worked on deep learning models using TensorFlow and Keras for image recognition.
+Master's Degree in Data Science.

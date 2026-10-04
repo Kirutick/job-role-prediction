@@ -1,0 +1,6 @@
+Detail-oriented Data Analyst with 4 years of experience transforming complex datasets into actionable business insights.
+Advanced proficiency in SQL for querying large databases and Excel for data manipulation and pivot tables.
+Developed interactive dashboards using Power BI and Tableau to track KPIs across multiple departments.
+Experience with Python (Pandas, Numpy) for data cleaning and exploratory data analysis.
+Strong communication skills, regularly presenting findings to stakeholders.
+B.Sc. in Mathematics and Statistics.

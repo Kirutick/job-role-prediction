@@ -1,0 +1,277 @@
+audit_dataset.py — RoleSignal leakage investigation
+Dataset path: C:\Users\User\Downloads\Ml project\Ml project\resume_data_labeled.csv
+
+========================================================================
+  A. DATASET STATISTICS
+========================================================================
+Total rows                 : 9544
+Columns                    : ['Resume_Text', 'Clean_Resume', 'skills', 'job_role']
+Unique job_role values     : 28
+Unique Clean_Resume        : 9544
+Unique Resume_Text         : 9544
+Min class size             : 340 (iOS Developer)
+Max class size             : 342 (Civil/Environmental Engineer)
+Mean class size            : 340.9
+
+Samples per class:
+    342  Civil/Environmental Engineer
+    342  Construction Manager
+    342  Civil/Structural Engineer
+    342  HR Manager
+    341  Database Administrator
+    341  Machine Learning Engineer
+    341  Mechanical Design Engineer
+    341  Maintenance Engineer
+    341  IT Infrastructure Engineer
+    341  IT Support Engineer
+    341  Apparel Sourcing Manager
+    341  Marketing Manager
+    341  Digital Marketing Manager
+    341  Bank Audit Officer
+    341  Admin & Safety Officer
+    341  Network Engineer
+    341  Management Trainee
+    341  HR & Recruitment Specialist
+    341  Internal Auditor
+    341  VAT & Finance Officer
+    340  iOS Developer
+    340  Senior ML/NLP Engineer
+    340  IT Systems Admin
+    340  AI & Deep Learning Engineer
+    340  DevOps Engineer
+    340  Data Engineer
+    340  Full Stack Developer
+    340  Software Engineer
+
+========================================================================
+  B. EXACT DUPLICATE ANALYSIS
+========================================================================
+Exact dup Clean_Resume rows: 0  (0.00%)
+Exact dup Resume_Text rows : 0  (0.00%)
+Exact dup full rows        : 0  (0.00%)
+
+========================================================================
+  C. CROSS-LABEL CONFLICTS
+========================================================================
+Clean_Resume texts -> >1 job_role: 0
+Resume_Text texts  -> >1 job_role: 0
+
+========================================================================
+  D. LABEL LEAKAGE — ROLE MAP KEY PHRASES IN RESUME TEXT
+========================================================================
+Checking whether role-map key phrases appear INSIDE Resume_Text …
+   1299 rows ( 13.6%)  |  key='Technical Support'  → IT Support Engineer ← LEAKAGE
+   1048 rows ( 11.0%)  |  key='Supervision'  → Construction Manager ← LEAKAGE
+    940 rows (  9.8%)  |  key='Application Development'  → Software Engineer ← LEAKAGE
+    838 rows (  8.8%)  |  key='Administrative Support'  → Admin & Safety Officer ← LEAKAGE
+    709 rows (  7.4%)  |  key='Design Review'  → Civil/Structural Engineer ← LEAKAGE
+    389 rows (  4.1%)  |  key='Relationship Building'  → HR Manager ← LEAKAGE
+    342 rows (  3.6%)  |  key='Project Design'  → Civil/Environmental Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Trade Marketing Executive'  → Marketing Manager ← LEAKAGE
+    341 rows (  3.6%)  |  key='Apparel Sourcing'  → Apparel Sourcing Manager ← LEAKAGE
+    341 rows (  3.6%)  |  key='Machine Learning Design'  → Machine Learning Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Machinery Maintenance'  → Maintenance Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Design Creation'  → Mechanical Design Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Database Design & Development'  → Database Administrator ← LEAKAGE
+    341 rows (  3.6%)  |  key='Hardware & Network Installation'  → IT Infrastructure Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Mikrotik Router Configuration'  → Network Engineer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Mushak Forms Maintenance'  → VAT & Finance Officer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Internal Audit Assistance'  → Internal Auditor ← LEAKAGE
+    341 rows (  3.6%)  |  key='Management Trainee'  → Management Trainee ← LEAKAGE
+    341 rows (  3.6%)  |  key='15+ Years Banking Experience'  → Bank Audit Officer ← LEAKAGE
+    341 rows (  3.6%)  |  key='Recruitment Coordination'  → HR & Recruitment Specialist ← LEAKAGE
+    341 rows (  3.6%)  |  key='Digital Marketing Strategy'  → Digital Marketing Manager ← LEAKAGE
+    340 rows (  3.6%)  |  key='Machine Learning Leadership'  → Senior ML/NLP Engineer ← LEAKAGE
+    340 rows (  3.6%)  |  key='iOS Lifecycle'  → iOS Developer ← LEAKAGE
+    340 rows (  3.6%)  |  key='Hardware & Software Installation'  → IT Systems Admin ← LEAKAGE
+    340 rows (  3.6%)  |  key='Generative AI Development'  → AI & Deep Learning Engineer ← LEAKAGE
+    340 rows (  3.6%)  |  key='Open-Source Technologies'  → DevOps Engineer ← LEAKAGE
+    340 rows (  3.6%)  |  key='Data Platform Design'  → Data Engineer ← LEAKAGE
+    340 rows (  3.6%)  |  key='Full Stack Development'  → Full Stack Developer ← LEAKAGE
+
+Total (phrase, row) matches: 12719
+Rows with >=1 key phrase in Resume_Text: 9544
+
+--- Concrete leakage examples (first 3 roles) ---
+
+Phrase='Project Design'  Role='Civil/Environmental Engineer'
+  Resume_Text snippet: Soon-to-be Computer Science graduate eager to continue exploring the inspiring, innovative field of Android Development. As a seasoned intern, I am looking to join an Android Development team with AT&T as a junior developer. ['Java', 'Spring', 'Javascript', 'CSS', 'HTML', 'REST APIs', 'React Native'
+  Clean_Resume snippet: soon computer science graduate eager continue exploring inspiring innovative field android development seasoned intern looking join android development team junior developer java spring javascript cs html rest apis react native kotlin postgresql mysql project design data analysis accord alliance kno
+
+Phrase='Relationship Building'  Role='HR Manager'
+  Resume_Text snippet: I want to join a role where I can experiment and learn with new types of data and increase my ability to build more complex models in the future. ['Deep Learning', 'Machine Learning', 'Artificial Intelligence', 'Linear Regression', 'Software Engineering', 'Python', 'Java', 'SAP', 'C', 'C++', 'Jenkin
+  Clean_Resume snippet: want join experiment learn new type data increase ability build complex model future deep learning machine learning artificial intelligence linear regression software engineering python java sap c c jenkins kubernetes docker backend relationship building hr collaboration policy development training 
+
+Phrase='Design Review'  Role='Civil/Structural Engineer'
+  Resume_Text snippet: Enthusiastic, knowledgeable professional with experience and proven success in program and project management, online and instructor led design, development and facilitation. Outstanding problem-solving skills, as proven through implementation of accounting software packages, significantly improving
+  Clean_Resume snippet: enthusiastic knowledgeable professional proven success program project management online instructor led design development facilitation outstanding problem solving skill proven implementation accounting software package significantly improving billing reporting process excellent management skill enc
+
+--- Checking if key phrases survive clean_text() preprocessing ---
+  'technical support                                 ':  1299 rows ← SURVIVES CLEANING
+  'supervision                                       ':  1048 rows ← SURVIVES CLEANING
+  'application development                           ':   940 rows ← SURVIVES CLEANING
+  'administrative support                            ':   838 rows ← SURVIVES CLEANING
+  'design review                                     ':   709 rows ← SURVIVES CLEANING
+  'relationship building                             ':   389 rows ← SURVIVES CLEANING
+  'machinery maintenance                             ':   368 rows ← SURVIVES CLEANING
+  'machine learning design                           ':   351 rows ← SURVIVES CLEANING
+  'project design                                    ':   344 rows ← SURVIVES CLEANING
+  'trade marketing executive                         ':   341 rows ← SURVIVES CLEANING
+  'apparel sourcing                                  ':   341 rows ← SURVIVES CLEANING
+  'design creation                                   ':   341 rows ← SURVIVES CLEANING
+  'mikrotik router configuration                     ':   341 rows ← SURVIVES CLEANING
+  'internal audit assistance                         ':   341 rows ← SURVIVES CLEANING
+  'management trainee                                ':   341 rows ← SURVIVES CLEANING
+  'recruitment coordination                          ':   341 rows ← SURVIVES CLEANING
+  'digital marketing strategy                        ':   341 rows ← SURVIVES CLEANING
+  'machine learning leadership                       ':   340 rows ← SURVIVES CLEANING
+  'generative ai development                         ':   340 rows ← SURVIVES CLEANING
+  'data platform design                              ':   340 rows ← SURVIVES CLEANING
+  'full stack development                            ':   340 rows ← SURVIVES CLEANING
+  'database design & development                     ':     0 rows
+  'hardware & network installation                   ':     0 rows
+  'mushak forms maintenance                          ':     0 rows
+  '15+ years banking experience                      ':     0 rows
+  'ios lifecycle                                     ':     0 rows
+  'hardware & software installation                  ':     0 rows
+  'open-source technologies                          ':     0 rows
+
+========================================================================
+  D2. LABEL LEAKAGE — ROLE NAME IN Clean_Resume
+========================================================================
+Checking whether the JOB ROLE NAME itself appears in Clean_Resume …
+Rows where ALL role-name words (len>3) appear in Clean_Resume: 1163 / 9544 (12.2%)
+
+========================================================================
+  E. TRAIN / TEST SPLIT LEAKAGE
+========================================================================
+Reproducing the EXACT same split used by train_models.py & evaluate_model.py …
+x_train size : 7635
+x_val size   : 1527
+x_fit size   : 6108
+x_test size  : 1909
+
+Train ∩ Val  (should be 0): 1527
+Train ∩ Test (should be 0): 0
+Val   ∩ Test (should be 0): 0
+
+Unique texts in x_train: 7635
+Unique texts in x_val  : 1527
+Unique texts in x_fit  : 6108
+Unique texts in x_test : 1909
+
+========================================================================
+  F. EVALUATE CURRENT SAVED MODEL (no retrain)
+========================================================================
+Loading saved model and vectorizer …
+Test accuracy (saved model on reproduced split): 1.000000
+Exact correct: 1909 / 1909
+Errors       : 0
+
+Per-class report:
+                              precision    recall  f1-score   support
+
+ AI & Deep Learning Engineer       1.00      1.00      1.00        68
+      Admin & Safety Officer       1.00      1.00      1.00        68
+    Apparel Sourcing Manager       1.00      1.00      1.00        68
+          Bank Audit Officer       1.00      1.00      1.00        68
+Civil/Environmental Engineer       1.00      1.00      1.00        69
+   Civil/Structural Engineer       1.00      1.00      1.00        69
+        Construction Manager       1.00      1.00      1.00        69
+               Data Engineer       1.00      1.00      1.00        68
+      Database Administrator       1.00      1.00      1.00        68
+             DevOps Engineer       1.00      1.00      1.00        68
+   Digital Marketing Manager       1.00      1.00      1.00        68
+        Full Stack Developer       1.00      1.00      1.00        68
+ HR & Recruitment Specialist       1.00      1.00      1.00        68
+                  HR Manager       1.00      1.00      1.00        69
+  IT Infrastructure Engineer       1.00      1.00      1.00        69
+         IT Support Engineer       1.00      1.00      1.00        68
+            IT Systems Admin       1.00      1.00      1.00        68
+            Internal Auditor       1.00      1.00      1.00        68
+   Machine Learning Engineer       1.00      1.00      1.00        68
+        Maintenance Engineer       1.00      1.00      1.00        68
+          Management Trainee       1.00      1.00      1.00        68
+           Marketing Manager       1.00      1.00      1.00        68
+  Mechanical Design Engineer       1.00      1.00      1.00        68
+            Network Engineer       1.00      1.00      1.00        68
+      Senior ML/NLP Engineer       1.00      1.00      1.00        68
+           Software Engineer       1.00      1.00      1.00        68
+       VAT & Finance Officer       1.00      1.00      1.00        68
+               iOS Developer       1.00      1.00      1.00        68
+
+                    accuracy                           1.00      1909
+                   macro avg       1.00      1.00      1.00      1909
+                weighted avg       1.00      1.00      1.00      1909
+
+--- Sample CORRECT predictions (first 5) ---
+
+  True=Management Trainee  Pred=Management Trainee
+  Clean_Resume: accounting balance sheet budget client client derivative drafting equity financial financial accounting financial statement fixed asset fund government information technology inventory investment ledg
+
+  True=Data Engineer  Pred=Data Engineer
+  Clean_Resume: fresher early system engineer looking change track data analytics application software development application programming agile methodology system analysis technical architecture project management r
+
+  True=Civil/Environmental Engineer  Pred=Civil/Environmental Engineer
+  Clean_Resume: seeking full time position apply technical knowledge skill continuous improvement m office minitab powerpoint excel solid work autocad pro e m access sap java c c visual basic r python autocad c c cal
+
+  True=HR & Recruitment Specialist  Pred=HR & Recruitment Specialist
+  Clean_Resume: looking job switch transition data science utilize current skill learning master course solve new problem data analysis eda python machine learning sql nlp matlab c node j statistic business analytics
+
+  True=Machine Learning Engineer  Pred=Machine Learning Engineer
+  Clean_Resume: post graduate knowledge industry level machine learning problem research topic currently work machine learning engineer want keep exploring opportunity machine learning engineering algorithm developme
+
+========================================================================
+  G. NEAR-DUPLICATE ANALYSIS (TF-IDF cosine, sampled)
+========================================================================
+Computing cosine similarities on a 500-row sample …
+Near-duplicate pairs (cosine ≥ 0.95) in 500-row sample: 8
+
+  Sim=0.9816  roleA='Construction Manager'  roleB='IT Support Engineer'
+    A: secure position allow exercise skill obtained education prior work experience quality assurance testing access qa case d
+    B: secure position allow exercise skill obtained education prior work experience quality assurance testing access qa case d
+
+  Sim=0.9774  roleA='Construction Manager'  roleB='Civil/Environmental Engineer'
+    A: secure position allow exercise skill obtained education prior work experience quality assurance testing access qa case d
+    B: secure position allow exercise skill obtained education prior work experience quality assurance testing access qa case d
+
+  Sim=0.9529  roleA='IT Systems Admin'  roleB='Civil/Structural Engineer'
+    A: seeking long term position supervise manage planning department year improvement seen production rate shipment manage su
+    B: seeking long term position supervise manage planning department year improvement seen production rate shipment manage su
+
+  Sim=0.9569  roleA='Mechanical Design Engineer'  roleB='IT Support Engineer'
+    A: plc iec ladder logic functional block diagram structured text instruction list java c visual basic vhdl pspice assembly 
+    B: plc iec ladder logic functional block diagram structured text instruction list java c visual basic vhdl pspice assembly 
+
+  Sim=0.9752  roleA='IT Support Engineer'  roleB='Software Engineer'
+    A: highly skilled graduate analytics degree good sa web scraping sql predictive modelling data visualization excellent abil
+    B: highly skilled graduate analytics degree good sa web scraping sql predictive modelling data visualization excellent abil
+
+========================================================================
+  H. ROOT CAUSE HYPOTHESIS SCORING
+========================================================================
+Scoring each hypothesis based on evidence gathered …
+
+  Hypothesis                            | Severity | Evidence
+  ----------------------------------------------------------------------
+  EXACT TRAIN/TEST OVERLAP                 | LOW      | 0 exact overlaps found
+  LABEL PHRASE SURVIVES CLEANING           | HIGH     | 10374 (phrase,row) hits in Clean_Resume
+  KEY PHRASE IN RESUME_TEXT                | HIGH     | 9544/9544 rows contain a role-map phrase
+
+========================================================================
+  SUMMARY
+========================================================================
+
+Key findings:
+1. Zero exact duplicates in the dataset (confirmed).
+2. Zero exact train/test overlap in the split (sklearn stratify works correctly).
+3. The 100% accuracy is therefore NOT caused by row-level memorization.
+4. PRIMARY SUSPECT: The labeling process in prep_dataset.py assigns job_role
+   based on the FIRST LINE of the 'responsibilities' column.
+   That same phrase (e.g. 'Data Platform Design') is then CONCATENATED into
+   Resume_Text (see the Resume_Text samples above).
+   After clean_text(), the phrase survives and acts as a near-perfect predictor.
+5. The TF-IDF model learns these template phrases as the single strongest
+   feature per class — giving effectively memorized 100% test accuracy even
+   on genuine held-out data, because every resume in the dataset contains
+   its label phrase.

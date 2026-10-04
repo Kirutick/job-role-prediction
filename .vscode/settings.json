@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python -m py_compile app\\.py; python -c \"from fastapi\\.testclient import TestClient; from app import app;\\\\nwith TestClient\\(app\\) as client:\\\\n    response=client\\.post\\('/predict', json=\\{'resume_text':'Python developer with Django REST API and SQL experience'\\}\\); print\\(response\\.status_code, response\\.json\\(\\)\\); invalid=client\\.post\\('/predict', json=\\{'resume_text':'   '\\}\\); print\\(invalid\\.status_code, invalid\\.json\\(\\)\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

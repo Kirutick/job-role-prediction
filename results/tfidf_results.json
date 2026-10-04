@@ -1,0 +1,58 @@
+{
+  "model_type": "TF-IDF baseline",
+  "selected_model": "LinearSVC+Calibrated",
+  "tfidf_config": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 10000,
+    "min_df": 2,
+    "max_df": 0.95,
+    "sublinear_tf": true,
+    "strip_accents": "unicode"
+  },
+  "validation": {
+    "MultinomialNB": {
+      "accuracy": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "weighted_f1": 0.0,
+      "minority_class_f1": 0.0,
+      "train_sec": 0.029857
+    },
+    "LogisticRegression": {
+      "accuracy": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "weighted_f1": 0.0,
+      "minority_class_f1": 0.0,
+      "train_sec": 0.834405
+    },
+    "LinearSVC+Calibrated": {
+      "accuracy": 0.081385,
+      "macro_precision": 0.081144,
+      "macro_recall": 0.081508,
+      "macro_f1": 0.072551,
+      "weighted_f1": 0.072504,
+      "minority_class_f1": 0.0,
+      "train_sec": 2.251186
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.084848,
+    "macro_precision": 0.088191,
+    "macro_recall": 0.084912,
+    "macro_f1": 0.074753,
+    "weighted_f1": 0.074721,
+    "minority_class_f1": 0.014706
+  },
+  "train_samples": 5388,
+  "val_samples": 1155,
+  "test_samples": 2805,
+  "num_classes": 28,
+  "leakage_status": "CLEAN \u2014 responsibility-block stripped",
+  "random_state": 42
+}

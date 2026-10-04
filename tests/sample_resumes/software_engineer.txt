@@ -1,0 +1,6 @@
+Senior Software Engineer with 7+ years of experience designing and developing scalable backend systems.
+Expert in Java, Spring Boot, and creating REST APIs.
+Proficient with relational databases like PostgreSQL and MySQL, as well as NoSQL solutions like MongoDB.
+Experience with CI/CD pipelines using Jenkins and deploying containerized applications with Docker and Kubernetes on AWS.
+Strong believer in Agile methodologies and Test-Driven Development (TDD).
+Bachelor of Engineering in Computer Science.

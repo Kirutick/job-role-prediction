@@ -1,0 +1,15 @@
+{
+  "model_type": "LSA Semantic (TF-IDF + SVD)",
+  "n_components": 256,
+  "explained_var": 0.872467505162123,
+  "val_metrics": {
+    "accuracy": 0.069264,
+    "macro_f1": 0.067009,
+    "weighted_f1": 0.066905
+  },
+  "test_metrics": {
+    "accuracy": 0.078431,
+    "macro_f1": 0.076887,
+    "weighted_f1": 0.076897
+  }
+}

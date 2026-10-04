@@ -1,0 +1,62 @@
+{
+  "model_name": "LinearSVC+Calibrated",
+  "model_type": "TF-IDF + LinearSVC (Calibrated)",
+  "dataset": "resume_data_clean.csv",
+  "dataset_note": "Synthetic labels; responsibility-block leakage removed",
+  "random_state": 42,
+  "tfidf_config": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 10000,
+    "min_df": 2,
+    "max_df": 0.95,
+    "sublinear_tf": true,
+    "strip_accents": "unicode"
+  },
+  "train_samples": 5388,
+  "val_samples": 1155,
+  "test_samples": 2805,
+  "num_classes": 28,
+  "class_labels": [
+    "AI & Deep Learning Engineer",
+    "Admin & Safety Officer",
+    "Apparel Sourcing Manager",
+    "Bank Audit Officer",
+    "Civil/Environmental Engineer",
+    "Civil/Structural Engineer",
+    "Construction Manager",
+    "Data Engineer",
+    "Database Administrator",
+    "DevOps Engineer",
+    "Digital Marketing Manager",
+    "Full Stack Developer",
+    "HR & Recruitment Specialist",
+    "HR Manager",
+    "IT Infrastructure Engineer",
+    "IT Support Engineer",
+    "IT Systems Admin",
+    "Internal Auditor",
+    "Machine Learning Engineer",
+    "Maintenance Engineer",
+    "Management Trainee",
+    "Marketing Manager",
+    "Mechanical Design Engineer",
+    "Network Engineer",
+    "Senior ML/NLP Engineer",
+    "Software Engineer",
+    "VAT & Finance Officer",
+    "iOS Developer"
+  ],
+  "test_metrics": {
+    "accuracy": 0.084848,
+    "macro_precision": 0.088191,
+    "macro_recall": 0.084912,
+    "macro_f1": 0.074753,
+    "weighted_f1": 0.074721,
+    "minority_class_f1": 0.014706
+  },
+  "active_model": "tfidf",
+  "leakage_status": "CLEAN"
+}
