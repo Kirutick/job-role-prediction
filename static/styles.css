@@ -110,6 +110,52 @@ main {
     font-size: 0.875rem;
 }
 
+.sample-resumes-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.sample-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sample-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.sample-btn {
+    background-color: rgba(30, 41, 59, 0.8);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.sample-btn:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent-color);
+    color: #60a5fa;
+}
+
+.sample-btn.active {
+    background-color: rgba(59, 130, 246, 0.25);
+    border-color: var(--accent-color);
+    color: #93c5fd;
+}
+
 textarea {
     width: 100%;
     min-height: 200px;

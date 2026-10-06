@@ -171,10 +171,30 @@ document.addEventListener('DOMContentLoaded', () => {
     resumeInput.addEventListener('input', () => {
         if (resumeInput.value.trim().length > 0 && currentFile) {
             currentFile = null;
+            document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
             const p = uploadZone.querySelector('p');
             p.innerHTML = `Click to upload or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span>`;
             fileInput.value = '';
         }
+    });
+
+    document.querySelectorAll('.sample-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const url = btn.dataset.sample;
+            const name = btn.dataset.name;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Could not fetch " + url);
+                const blob = await res.blob();
+                const file = new File([blob], name, { type: 'application/pdf' });
+                handleFile(file);
+            } catch (err) {
+                showError("Failed to load sample resume: " + err.message);
+            }
+        });
     });
 
     function setLoading(isLoading) {
