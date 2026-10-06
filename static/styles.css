@@ -341,9 +341,197 @@ textarea:focus {
     margin-left: 0.5rem;
 }
 
+/* Company recommendations */
+.companies-section {
+    margin-top: 2rem;
+}
+
+.companies-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.companies-heading h2 {
+    margin-bottom: 0.35rem;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+}
+
+.companies-heading p {
+    max-width: 760px;
+    color: var(--text-secondary);
+}
+
+.companies-heading-mark {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+}
+
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.company-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+    padding: 1.25rem;
+}
+
+.company-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.company-card-heading h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.company-match {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid rgba(16, 185, 129, 0.24);
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #6ee7b7;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.company-why-title {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.company-reasons {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    list-style: none;
+}
+
+.company-reasons li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.company-reasons li::before {
+    color: var(--success-color);
+    content: "✓";
+    font-weight: 700;
+}
+
+.company-cta {
+    width: 100%;
+    margin-top: auto;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid rgba(59, 130, 246, 0.32);
+    border-radius: 0.5rem;
+    background: rgba(59, 130, 246, 0.09);
+    color: #93c5fd;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.company-cta:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.companies-disclaimer {
+    margin: 0.9rem 0 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.approach-card {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.85fr) 1.5fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    background: linear-gradient(120deg, rgba(30, 41, 59, 0.96), rgba(22, 36, 57, 0.96));
+}
+
+.approach-eyebrow {
+    color: #60a5fa;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.approach-card h3 {
+    margin-top: 0.3rem;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+}
+
+.approach-list {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    list-style: none;
+}
+
+.approach-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.approach-list li span {
+    color: #60a5fa;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .results-grid {
         grid-template-columns: 1fr;
+    }
+
+    .companies-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .approach-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .companies-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .company-card {
+        min-height: 0;
     }
 }

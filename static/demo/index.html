@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08111f">
+    <title>RoleSignal — AI Resume Screening &amp; Job Role Prediction</title>
+    <link rel="stylesheet" href="/demo/demo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="demo-shell">
+        <header class="demo-topbar">
+            <a class="brand" href="/demo" aria-label="RoleSignal demo home">
+                <span class="brand-mark" aria-hidden="true">R</span>
+                <span>Role<span class="brand-accent">Signal</span></span>
+            </a>
+            <nav class="top-nav" aria-label="Demo sections">
+                <a href="#workflow">Workflow</a>
+                <a href="#live-demo">Live demo</a>
+                <a href="#technology">Technology</a>
+            </nav>
+            <div class="top-actions">
+                <button class="button button-quiet" id="presentationButton" type="button">Presentation Mode</button>
+                <button class="button button-outline" id="restartButton" type="button">Restart Demo</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero" aria-labelledby="hero-title">
+                <div class="hero-copy">
+                    <div class="eyebrow"><span class="live-dot"></span> ACADEMIC PROJECT DEMONSTRATION</div>
+                    <h1 id="hero-title">RoleSignal<span class="hero-period">.</span></h1>
+                    <p class="hero-subtitle">AI-Powered Resume Screening &amp; Job Role Prediction</p>
+                    <p class="hero-description">See how resume text, PDF documents, and image uploads move through extraction, machine learning, and skills analysis to a live role prediction.</p>
+                    <a class="button button-primary start-button" href="#live-demo">
+                        Start Live Demo <span aria-hidden="true">↘</span>
+                    </a>
+                    <div class="hero-capabilities" aria-label="Project capabilities">
+                        <span>Upload Resume</span>
+                        <span>Analyze Resume</span>
+                        <span>Predict Job Role</span>
+                        <span>Extract Skills</span>
+                        <span>Screening Analysis</span>
+                    </div>
+                </div>
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="orbit orbit-outer"></div>
+                    <div class="orbit orbit-inner"></div>
+                    <div class="orbit-core"><span>RS</span><small>LIVE INFERENCE</small></div>
+                    <div class="orbit-tag tag-input"><span class="tag-icon">01</span> Resume</div>
+                    <div class="orbit-tag tag-model"><span class="tag-icon">02</span> ML Model</div>
+                    <div class="orbit-tag tag-result"><span class="tag-icon">03</span> Role Match</div>
+                    <div class="orbit-spark spark-one"></div>
+                    <div class="orbit-spark spark-two"></div>
+                </div>
+            </section>
+
+            <section class="workflow-section section-block" id="workflow" aria-labelledby="workflow-title">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">FROM DOCUMENT TO INSIGHT</div>
+                        <h2 id="workflow-title">Project workflow</h2>
+                    </div>
+                    <p>One connected pipeline. Real local model inference.</p>
+                </div>
+                <div class="workflow-track" aria-label="Resume input to final screening result workflow">
+                    <div class="workflow-step"><span class="step-index">01</span><span>Resume<br>Input</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">02</span><span>PDF / Image /<br>Text Processing</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">03</span><span>OCR / Text<br>Extraction</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">04</span><span>Resume<br>Preprocessing</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step workflow-step-highlight"><span class="step-index">05</span><span>ML<br>Model</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">06</span><span>Job Role<br>Prediction</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">07</span><span>Skill<br>Extraction</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step"><span class="step-index">08</span><span>Screening<br>Analysis</span></div>
+                    <span class="workflow-arrow" aria-hidden="true">→</span>
+                    <div class="workflow-step workflow-step-result"><span class="step-index">09</span><span>Final<br>Result</span></div>
+                </div>
+            </section>
+
+            <section class="live-section section-block" id="live-demo" aria-labelledby="live-title">
+                <div class="section-heading live-heading">
+                    <div>
+                        <div class="eyebrow">INTERACTIVE PROJECT WALKTHROUGH</div>
+                        <h2 id="live-title">Live demo</h2>
+                    </div>
+                    <div class="live-heading-actions">
+                        <span class="real-model-label"><span class="live-dot"></span> Connected to the real API</span>
+                        <button class="button button-quiet presentation-exit hidden" id="presentationExitButton" type="button">Exit Presentation Mode</button>
+                    </div>
+                </div>
+
+                <div class="demo-workspace">
+                    <div class="app-frame-wrap">
+                        <div class="frame-caption"><span class="frame-window-dots"><i></i><i></i><i></i></span><span>ROLESIGNAL · LOCAL APP</span><span class="frame-secure">127.0.0.1:8000</span></div>
+                        <iframe id="screeningApp" src="/" title="Live RoleSignal resume screening application"></iframe>
+                    </div>
+
+                    <aside class="result-panel" aria-live="polite">
+                        <div class="panel-topline">
+                            <span class="panel-kicker">LIVE ANALYSIS</span>
+                            <span class="request-status" id="requestStatus"><span class="status-dot"></span> Ready for resume</span>
+                        </div>
+
+                        <div class="processing-card hidden" id="processingCard">
+                            <div class="processing-title"><span class="spinner"></span><span>Processing resume</span></div>
+                            <ol class="processing-steps" id="processingSteps">
+                                <li>Reading Resume</li>
+                                <li>Extracting Text</li>
+                                <li>Preprocessing Resume</li>
+                                <li>Running ML Model</li>
+                                <li>Extracting Skills</li>
+                                <li>Generating Screening Analysis</li>
+                            </ol>
+                        </div>
+
+                        <div class="result-content" id="resultContent">
+                            <div class="empty-result">
+                                <div class="empty-glyph" aria-hidden="true">✳</div>
+                                <h3>Your result appears here</h3>
+                                <p>Paste resume text or upload a PDF, PNG, or JPG in the live app. The panel will show the response from the running RoleSignal API.</p>
+                                <div class="empty-flow"><span>INPUT</span><b>→</b><span>MODEL</span><b>→</b><span>RESULT</span></div>
+                            </div>
+                        </div>
+
+                        <div class="result-error hidden" id="resultError" role="alert"></div>
+                        <div class="panel-disclaimer">Demo Heuristic - Not a Hiring Decision</div>
+                    </aside>
+                </div>
+                <div class="presentation-toolbar hidden" id="presentationToolbar">
+                    <span>Presentation Mode <span class="toolbar-separator">/</span> Live project walkthrough</span>
+                    <button class="button button-outline" id="restartPresentationButton" type="button">Restart Demo</button>
+                </div>
+            </section>
+
+            <section class="section-block explainer-section" id="how-it-works" aria-labelledby="explainer-title">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">UNDER THE HOOD</div>
+                        <h2 id="explainer-title">How the system works</h2>
+                    </div>
+                    <p>Each step leads to a result from the existing application.</p>
+                </div>
+                <div class="explainer-grid">
+                    <article class="info-card"><span class="info-icon">01</span><h3>Input</h3><p>Provide resume text, a PDF, or an image resume.</p></article>
+                    <article class="info-card"><span class="info-icon">02</span><h3>Text extraction</h3><p>Read PDF content or prepare image content for OCR.</p></article>
+                    <article class="info-card"><span class="info-icon">03</span><h3>OCR</h3><p>Tesseract OCR extracts readable text from image resumes.</p></article>
+                    <article class="info-card"><span class="info-icon">04</span><h3>Preprocessing</h3><p>Normalize resume text for the saved vectorizer.</p></article>
+                    <article class="info-card"><span class="info-icon">05</span><h3>Machine learning</h3><p>TF-IDF features are classified by the ResumeAtlas-trained model.</p></article>
+                    <article class="info-card"><span class="info-icon">06</span><h3>Skill extraction</h3><p>Identify skills present in the supplied resume content.</p></article>
+                    <article class="info-card"><span class="info-icon">07</span><h3>Screening</h3><p>Generate the application's separate heuristic breakdown.</p></article>
+                </div>
+            </section>
+
+            <section class="section-block technology-section" id="technology" aria-labelledby="technology-title">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">BUILT WITH</div>
+                        <h2 id="technology-title">Technology stack</h2>
+                    </div>
+                    <p>Technologies identified from this project's requirements and source.</p>
+                </div>
+                <div class="tech-list">
+                    <span><b>Python</b><small>Application &amp; ML</small></span>
+                    <span><b>FastAPI</b><small>API service</small></span>
+                    <span><b>scikit-learn</b><small>TF-IDF &amp; LinearSVC</small></span>
+                    <span><b>ResumeAtlas</b><small>Training dataset</small></span>
+                    <span><b>pypdf</b><small>PDF text extraction</small></span>
+                    <span><b>pytesseract</b><small>Image OCR bridge</small></span>
+                    <span><b>Tesseract OCR</b><small>System OCR engine</small></span>
+                    <span><b>Pillow</b><small>Image processing</small></span>
+                    <span><b>HTML · CSS · JS</b><small>Existing user interface</small></span>
+                </div>
+            </section>
+
+            <section class="section-block features-section" aria-labelledby="features-title">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">PROJECT CAPABILITIES</div>
+                        <h2 id="features-title">From resume to role signal</h2>
+                    </div>
+                </div>
+                <div class="feature-grid">
+                    <article class="feature-card"><span>⌁</span><h3>Resume text analysis</h3><p>Submit pasted resume text to the prediction API.</p></article>
+                    <article class="feature-card"><span>▤</span><h3>PDF processing</h3><p>Extract readable text from uploaded PDF resumes.</p></article>
+                    <article class="feature-card"><span>◉</span><h3>Image OCR</h3><p>Recognize resume text from PNG and JPG uploads.</p></article>
+                    <article class="feature-card"><span>✳</span><h3>Job role prediction</h3><p>Run local inference with the saved role classifier.</p></article>
+                    <article class="feature-card"><span>⌗</span><h3>Skill extraction</h3><p>Surface detected and role-related skills.</p></article>
+                    <article class="feature-card"><span>▥</span><h3>Screening breakdown</h3><p>Show the app's transparent, separate demo heuristic.</p></article>
+                    <article class="feature-card"><span>⌂</span><h3>Local ML inference</h3><p>Keep resume analysis running on the local application.</p></article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="demo-footer">
+            <span>RoleSignal <span class="footer-separator">·</span> Academic project demonstration</span>
+            <span class="footer-disclaimer">Demo Heuristic - Not a Hiring Decision</span>
+            <span>Built as an academic/project demonstration.</span>
+        </footer>
+    </div>
+    <script src="/demo/demo.js"></script>
+</body>
+</html>
