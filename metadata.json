@@ -1,62 +1,232 @@
 {
-  "model_name": "LinearSVC+Calibrated",
-  "model_type": "TF-IDF + LinearSVC (Calibrated)",
-  "dataset": "resume_data_clean.csv",
-  "dataset_note": "Synthetic labels; responsibility-block leakage removed",
+  "model_name": "LinearSVC balanced",
+  "model_type": "TF-IDF + LinearSVC balanced",
+  "active_model": "tfidf",
+  "dataset": "ResumeAtlas",
+  "dataset_id": "ahmedheakl/resume-atlas",
+  "dataset_revision": "3f80ca910fa9964890afb7845c09e239d07b9b1d",
+  "source_dataset_rows": 13389,
+  "dataset_rows": 11916,
+  "num_classes": 43,
+  "class_labels": [
+    "Accountant",
+    "Advocate",
+    "Agriculture",
+    "Apparel",
+    "Architecture",
+    "Arts",
+    "Automobile",
+    "Aviation",
+    "BPO",
+    "Banking",
+    "Blockchain",
+    "Building and Construction",
+    "Business Analyst",
+    "Civil Engineer",
+    "Consultant",
+    "Data Science",
+    "Database",
+    "Designing",
+    "DevOps",
+    "Digital Media",
+    "DotNet Developer",
+    "ETL Developer",
+    "Education",
+    "Electrical Engineering",
+    "Finance",
+    "Food and Beverages",
+    "Health and Fitness",
+    "Human Resources",
+    "Information Technology",
+    "Java Developer",
+    "Management",
+    "Mechanical Engineer",
+    "Network Security Engineer",
+    "Operations Manager",
+    "PMO",
+    "Public Relations",
+    "Python Developer",
+    "React Developer",
+    "SAP Developer",
+    "SQL Developer",
+    "Sales",
+    "Testing",
+    "Web Designing"
+  ],
+  "train_samples": 8340,
+  "validation_samples": 1788,
+  "test_samples": 1788,
+  "validation_accuracy": 0.8271812080536913,
+  "validation_macro_f1": 0.8231559113166317,
+  "test_accuracy": 0.8322147651006712,
+  "top3_accuracy": 0.9379194630872483,
+  "macro_precision": 0.8326740269214783,
+  "macro_recall": 0.8303811498893015,
+  "macro_f1": 0.8273523316588346,
+  "weighted_f1": 0.8271067697584266,
+  "leakage_status": "CLEAN",
   "random_state": 42,
+  "split_proportions": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
   "tfidf_config": {
     "ngram_range": [
       1,
       2
     ],
-    "max_features": 10000,
-    "min_df": 2,
-    "max_df": 0.95,
     "sublinear_tf": true,
-    "strip_accents": "unicode"
+    "strip_accents": "unicode",
+    "max_features": 10000
   },
-  "train_samples": 5388,
-  "val_samples": 1155,
-  "test_samples": 2805,
-  "num_classes": 28,
-  "class_labels": [
-    "AI & Deep Learning Engineer",
-    "Admin & Safety Officer",
-    "Apparel Sourcing Manager",
-    "Bank Audit Officer",
-    "Civil/Environmental Engineer",
-    "Civil/Structural Engineer",
-    "Construction Manager",
-    "Data Engineer",
-    "Database Administrator",
-    "DevOps Engineer",
-    "Digital Marketing Manager",
-    "Full Stack Developer",
-    "HR & Recruitment Specialist",
-    "HR Manager",
-    "IT Infrastructure Engineer",
-    "IT Support Engineer",
-    "IT Systems Admin",
-    "Internal Auditor",
-    "Machine Learning Engineer",
-    "Maintenance Engineer",
-    "Management Trainee",
-    "Marketing Manager",
-    "Mechanical Design Engineer",
-    "Network Engineer",
-    "Senior ML/NLP Engineer",
-    "Software Engineer",
-    "VAT & Finance Officer",
-    "iOS Developer"
-  ],
-  "test_metrics": {
-    "accuracy": 0.084848,
-    "macro_precision": 0.088191,
-    "macro_recall": 0.084912,
-    "macro_f1": 0.074753,
-    "weighted_f1": 0.074721,
-    "minority_class_f1": 0.014706
-  },
-  "active_model": "tfidf",
-  "leakage_status": "CLEAN"
+  "model_selection": {
+    "criterion": "validation macro-F1",
+    "candidates": [
+      {
+        "model": "LinearSVC balanced",
+        "max_features": 10000,
+        "validation": {
+          "accuracy": 0.8271812080536913,
+          "macro_precision": 0.8317042664249203,
+          "macro_recall": 0.8250425803878007,
+          "macro_f1": 0.8231559113166317,
+          "weighted_f1": 0.8220498344433053
+        },
+        "training_seconds": 1.691
+      },
+      {
+        "model": "LinearSVC",
+        "max_features": 30000,
+        "validation": {
+          "accuracy": 0.8271812080536913,
+          "macro_precision": 0.8345309331335656,
+          "macro_recall": 0.8230393743280462,
+          "macro_f1": 0.8227279552131517,
+          "weighted_f1": 0.8221045464563324
+        },
+        "training_seconds": 2.336
+      },
+      {
+        "model": "LinearSVC balanced",
+        "max_features": 30000,
+        "validation": {
+          "accuracy": 0.8277404921700223,
+          "macro_precision": 0.8333519107376725,
+          "macro_recall": 0.8240392953260559,
+          "macro_f1": 0.8220949501524739,
+          "weighted_f1": 0.822044282299273
+        },
+        "training_seconds": 2.403
+      },
+      {
+        "model": "LinearSVC",
+        "max_features": 20000,
+        "validation": {
+          "accuracy": 0.8249440715883669,
+          "macro_precision": 0.834137689240559,
+          "macro_recall": 0.8207057522520494,
+          "macro_f1": 0.8214802414826168,
+          "weighted_f1": 0.8200046586127184
+        },
+        "training_seconds": 2.063
+      },
+      {
+        "model": "LinearSVC",
+        "max_features": 10000,
+        "validation": {
+          "accuracy": 0.8232662192393736,
+          "macro_precision": 0.8306770883878044,
+          "macro_recall": 0.8189844619040466,
+          "macro_f1": 0.8189254890544642,
+          "weighted_f1": 0.8181908801567386
+        },
+        "training_seconds": 1.653
+      },
+      {
+        "model": "Calibrated LinearSVC",
+        "max_features": 20000,
+        "validation": {
+          "accuracy": 0.819910514541387,
+          "macro_precision": 0.8307100726251468,
+          "macro_recall": 0.8149484356369207,
+          "macro_f1": 0.817987628581642,
+          "weighted_f1": 0.8174656535182739
+        },
+        "training_seconds": 4.234
+      },
+      {
+        "model": "Calibrated LinearSVC",
+        "max_features": 30000,
+        "validation": {
+          "accuracy": 0.819351230425056,
+          "macro_precision": 0.8307576377183501,
+          "macro_recall": 0.8147009792644271,
+          "macro_f1": 0.8179676126539756,
+          "weighted_f1": 0.8171305686877272
+        },
+        "training_seconds": 4.798
+      },
+      {
+        "model": "LinearSVC balanced",
+        "max_features": 20000,
+        "validation": {
+          "accuracy": 0.8221476510067114,
+          "macro_precision": 0.825631142583754,
+          "macro_recall": 0.819082027370883,
+          "macro_f1": 0.8170666076989676,
+          "weighted_f1": 0.8166615772884651
+        },
+        "training_seconds": 2.1
+      },
+      {
+        "model": "Calibrated LinearSVC",
+        "max_features": 10000,
+        "validation": {
+          "accuracy": 0.8187919463087249,
+          "macro_precision": 0.8271133847931523,
+          "macro_recall": 0.8135797887723651,
+          "macro_f1": 0.8152040589322539,
+          "weighted_f1": 0.8154336996360582
+        },
+        "training_seconds": 3.302
+      },
+      {
+        "model": "LogisticRegression",
+        "max_features": 30000,
+        "validation": {
+          "accuracy": 0.7818791946308725,
+          "macro_precision": 0.8015233235008302,
+          "macro_recall": 0.7626143372317955,
+          "macro_f1": 0.7691633014282423,
+          "weighted_f1": 0.7763481132837674
+        },
+        "training_seconds": 9.254
+      },
+      {
+        "model": "LogisticRegression",
+        "max_features": 10000,
+        "validation": {
+          "accuracy": 0.7818791946308725,
+          "macro_precision": 0.7960899358452579,
+          "macro_recall": 0.7633637364398662,
+          "macro_f1": 0.7687495864132796,
+          "weighted_f1": 0.7767198864589334
+        },
+        "training_seconds": 5.066
+      },
+      {
+        "model": "LogisticRegression",
+        "max_features": 20000,
+        "validation": {
+          "accuracy": 0.7802013422818792,
+          "macro_precision": 0.8002062893136958,
+          "macro_recall": 0.761326004552173,
+          "macro_f1": 0.7681426655662601,
+          "weighted_f1": 0.7749078160451719
+        },
+        "training_seconds": 6.594
+      }
+    ]
+  }
 }

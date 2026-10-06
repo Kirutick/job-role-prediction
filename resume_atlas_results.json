@@ -1,0 +1,36 @@
+{
+  "dataset": "ResumeAtlas",
+  "source_dataset_rows": 13389,
+  "dataset_rows": 11916,
+  "num_classes": 43,
+  "filtering_decisions": {
+    "missing_or_empty_resume_or_label_rows_removed": 0,
+    "all_rows_in_conflicting_normalized_text_groups_removed": 381,
+    "same_label_normalized_duplicates_removed_keep_first_source_row": 1092,
+    "extremely_short_resume_rows_removed": 0,
+    "resume_text_cleaned_or_rewritten": false
+  },
+  "split_counts": {
+    "train": 8340,
+    "validation": 1788,
+    "test": 1788
+  },
+  "selected_model": "LinearSVC balanced",
+  "selected_max_features": 10000,
+  "validation": {
+    "accuracy": 0.8271812080536913,
+    "macro_precision": 0.8317042664249203,
+    "macro_recall": 0.8250425803878007,
+    "macro_f1": 0.8231559113166317,
+    "weighted_f1": 0.8220498344433053
+  },
+  "test": {
+    "accuracy": 0.8322147651006712,
+    "macro_precision": 0.8326740269214783,
+    "macro_recall": 0.8303811498893015,
+    "macro_f1": 0.8273523316588346,
+    "weighted_f1": 0.8271067697584266,
+    "top3_accuracy": 0.9379194630872483
+  },
+  "leakage_status": "CLEAN"
+}

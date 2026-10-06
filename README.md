@@ -1,193 +1,116 @@
 # RoleSignal: Resume Screening & Job-Role Prediction
 
-> **⚠️ DATASET STATUS: Training halted pending genuine labelled dataset.**
-> See [PHASE1_FINDINGS.md](PHASE1_FINDINGS.md) and [MODEL_CARD.md](MODEL_CARD.md) for full details.
+RoleSignal is a demonstration application that predicts one of 43 occupational
+categories from resume text using a TF-IDF classifier trained on ResumeAtlas.
+It also extracts skills and displays a separate heuristic screening breakdown.
+It is not a hiring or candidate-suitability system.
 
-RoleSignal is a resume screening and job-role prediction system built as an ML engineering demonstration.
-It accepts raw resume text and uses machine learning to predict the most likely job role, extracts
-technical skills, and provides a transparent demo screening score.
+## Dataset and model
 
----
+The classifier uses the public
+[ResumeAtlas dataset](https://huggingface.co/datasets/ahmedheakl/resume-atlas),
+pinned to revision `3f80ca910fa9964890afb7845c09e239d07b9b1d`. The source has
+13,389 rows and 43 categories. The audit found 1,304 repeated normalized-text
+rows, including 381 rows in 169 duplicate-text groups with conflicting
+categories. All rows in conflicting groups were excluded; same-label normalized
+duplicates were collapsed, retaining the first source row. This leaves 11,916
+unique resumes. Seven resumes shorter than 100 characters were flagged and
+retained. The audit found no explicit category/role marker blocks appended to
+resume text.
 
-## 1. Problem
+The unique resumes were split once, stratified by category with random state
+42: 8,340 train, 1,788 validation, and 1,788 test. Normalized resume text has
+zero overlap between any pair of splits. Model/vectorizer fitting uses the
+training split only; validation macro-F1 selected the model, and the held-out
+test split was evaluated once.
 
-Resume screening is a tedious and time-consuming process. Recruiters receive hundreds of resumes per
-job posting, making it difficult to efficiently route candidates to the right role and identify whether
-they have the baseline skills required.
+The selected model is **TF-IDF (10,000 maximum features) + class-balanced
+LinearSVC**. Validation accuracy was **82.72%** and validation macro-F1 was
+**0.8232**. Held-out test accuracy was **83.22%**, top-3 accuracy **93.79%**,
+macro-F1 **0.8274**, and weighted F1 **0.8271**. These are results on this
+dataset and split, not a guarantee of performance on other resumes or sources.
+See [MODEL_CARD.md](MODEL_CARD.md), [DATA_STRATEGY.md](DATA_STRATEGY.md), and
+`resume_atlas_results.json` for details.
 
----
+The raw download is held in the Hugging Face cache. The normalized
+`resume_data_real.csv`, split files, confusion-matrix images, and
+`misclassified_resumes.csv` are local generated outputs and are git-ignored;
+the misclassified CSV contains resume text and should not be published.
+Historical synthetic datasets and their leakage-audit records remain unchanged
+for reference; they are not used by the current runtime model.
 
-## 2. Dataset History & Honest Status
+## Local setup
 
-### Original Dataset — Confirmed Leakage
+Use Python 3.12 and install the runtime requirements:
 
-The original dataset (`resume_data_labeled.csv`) initially produced **100% test accuracy**.
-
-A full leakage audit (`audit_dataset.py`) identified the root cause: every resume had a
-**synthetic responsibility block** appended to it encoding the target role. For example:
-
-```
-Machine Learning Leadership
-Cross-Functional Collaboration
-ML System Design
-Algorithm Research
-```
-
-This block — not the actual resume text — was what the model learned to classify.
-Stripping the block dropped accuracy to ~8.5%, confirming the leakage.
-
-**The original dataset and the cleaned version (`resume_data_clean.csv`) remain in the
-repository ONLY as a documented demonstration of the leakage problem.**
-They are NOT used for the actual model.
-
-### Genuine Dataset — Status
-
-A Phase 1 audit was conducted on all available datasets:
-
-| Dataset | Rows | Unique | Verdict |
-|---|---|---|---|
-| `resume_data_labeled.csv` | 9,544 | — | REJECTED — synthetic labels via responsibility block |
-| `resume_data_clean.csv` | 9,348 | — | REJECTED — labels remain synthetic after block removal |
-| `UpdatedResumeDataSet.csv` (Kaggle mirror) | 962 | **166** | REJECTED — only 166 unique resumes after deduplication |
-
-**No genuine role-labelled dataset with sufficient size has been found.**
-Training is halted until one is obtained. See [PHASE1_FINDINGS.md](PHASE1_FINDINGS.md).
-
----
-
-## 3. Architecture
-
-```
-Raw Resume (Text / PDF / Image)
-         ↓
-    clean_text() & skills_extractor.py
-         ↓
-    TF-IDF Vectorizer (1-2 grams)
-         ↓
-    LinearSVC (Calibrated) — demo model only
-         ↓
-    Prediction (Role & Confidence)
-         ↓
-    Screening Engine (Skills Match & Heuristics)
-         ↓
-    FastAPI (/analyze endpoint)
-         ↓
-    Web UI
-```
-
-Note: The currently deployed model is trained on the **leaked baseline dataset** for
-demonstration purposes only. Its predictions are not meaningful. This is clearly
-labelled in the UI.
-
----
-
-## 4. Models
-
-| Model | Description | Status |
-|---|---|---|
-| TF-IDF + Calibrated LinearSVC | Baseline | Trained on leaked data (demo only) |
-| TF-IDF + TruncatedSVD + LinearSVC | Latent Semantic Analysis (LSA) | Trained on leaked data (demo only) |
-| Genuine model | Awaiting real dataset | NOT YET TRAINED |
-
-Once a genuine dataset is available, both models will be re-trained and benchmarked
-using identical 70/15/15 stratified splits.
-
----
-
-## 5. Setup & Commands
-
-**1. Install dependencies**
-```bash
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
-*(Requires Python 3.10+)*
 
-**2. Run leakage audit on original dataset**
-```bash
-python audit_dataset.py
+For dataset auditing, training, and report generation, install the development
+dependencies:
+
+```powershell
+pip install -r requirements-dev.txt
 ```
 
-**3. Inspect datasets (Phase 1)**
-```bash
-python inspect_datasets.py
+Image OCR also requires the Tesseract system executable. On Windows, install
+Tesseract OCR and make it available on PATH; the application can also locate
+the standard Windows installation directory.
+
+## Rebuild the dataset and model
+
+Run these commands from the project root:
+
+```powershell
+python audit_resume_atlas.py
+python train_resume_atlas.py
 ```
 
-**4. Run the API / Web App (demo mode)**
-```bash
+The audit downloads the pinned ResumeAtlas revision, identifies its text and
+label columns, documents duplicates and filtering, normalizes the schema to
+`resume_id`, `resume_text`, and `job_role`, and creates the stratified splits.
+Training refuses to proceed if the audit/leakage checks fail. It compares the
+specified TF-IDF classifier candidates on validation macro-F1, then evaluates
+the selected model once on the held-out test set. It writes the model artifacts
+to `models/`, metrics to `metadata.json` and `resume_atlas_results.json`, and
+the requested evaluation plots and misclassification report.
+
+## Run the application
+
+```powershell
 uvicorn app:app --reload
 ```
-Then open `http://127.0.0.1:8000` in your browser.
 
-**5. Training (once genuine dataset is available)**
-```bash
-# NOT YET AVAILABLE — waiting for genuine dataset
-python split_dataset.py
-python train_tfidf.py
-python train_semantic.py
-```
+Open `http://127.0.0.1:8000`. API endpoints:
 
----
+- `GET /health` — readiness and model status
+- `GET /docs` — interactive API documentation
+- `POST /predict` — predict a role from resume text
+- `POST /analyze` — role prediction, skills, and screening breakdown
+- `POST /predict-file` — extract text from a PDF or image, then analyze it
 
-## 6. API Endpoints
+The model emits a confidence value only when its classifier provides
+probabilities. The selected class-balanced LinearSVC is not calibrated, so its
+current API confidence is `null`; raw decision scores are not presented as
+calibrated confidence. The existing frontend renders a missing confidence as
+`0%` and has no top-three entries for this model; that display is not a
+calibrated score. The screening breakdown is an independent demo heuristic,
+not model probability or hiring suitability.
 
-- `POST /predict` — Predicts the job role from text
-- `POST /predict-file` — Extracts text from a PDF/image and predicts the role
-- `POST /analyze` — Predicts role, extracts skills, and returns screening breakdown
-- `GET /health` — System health check
-- `GET /docs` — Interactive API documentation
+## Limitations
 
----
-
-## 7. Leakage Audit Tools
-
-| File | Purpose |
-|---|---|
-| `audit_dataset.py` | Full leakage audit on original dataset |
-| `inspect_datasets.py` | Phase 1 dataset inspection |
-| `download_and_audit_genuine_dataset.py` | Downloads and audits external dataset |
-| `phase1_deep_inspection.py` | Deep duplicate/leakage investigation |
-| `PHASE1_FINDINGS.md` | Official Phase 1 findings |
-| `MODEL_AUDIT_REPORT.md` | Original leakage audit report |
-
----
-
-## 8. Limitations
-
-Please refer to [MODEL_CARD.md](MODEL_CARD.md) for a complete breakdown of all limitations.
-
-Key limitations:
-- **No genuine training data**: The current model is a demo trained on synthetically labelled data.
-- **~8.5% accuracy**: This is honest — the labels were random relative to resume content.
-- **Not for hiring decisions**: This is a technical demonstration, not a production system.
-- **English only**: The model only processes English-language resumes.
-- **Keyword-based**: TF-IDF cannot understand semantic context.
-
----
-
-## 9. Reproduction Instructions
-
-To reproduce the original 100% accuracy (leaked baseline):
-```bash
-python build_clean_dataset.py   # creates resume_data_clean.csv (without responsibility block)
-# NOTE: The old model artifacts (job_role_model.pkl, tfidf_vectorizer.pkl) still produce
-# ~100% if you load resume_data_labeled.csv and use Resume_Text — which contains the block.
-```
-
-To reproduce the honest 8.5% result:
-```bash
-python split_dataset.py      # uses resume_data_clean.csv
-python train_tfidf.py        # trains on cleaned data
-# Then check models/tfidf_model.pkl performance on splits/test_ids.csv
-```
-
----
-
-## 10. Next Steps
-
-1. Obtain a genuine role-labelled resume dataset (see [PHASE1_FINDINGS.md](PHASE1_FINDINGS.md))
-2. Run `audit_dataset.py` on the new dataset
-3. Generate 70/15/15 stratified splits
-4. Train TF-IDF baseline and LSA model
-5. Compare on validation set, select best model
-6. Run final evaluation on test set (once only)
-7. Update README and MODEL_CARD with real metrics
+- ResumeAtlas category labels are dataset annotations, not verified hiring
+  outcomes or validated assessments of candidate suitability.
+- The held-out test metrics describe only the audited ResumeAtlas split and
+  may not generalize across employers, occupations, languages, resume formats,
+  or populations.
+- Duplicate-text groups with conflicting labels were excluded rather than
+  assigning an arbitrary target. Seven very short records were retained.
+- TF-IDF is based on word features and does not understand context or validate
+  qualifications.
+- PDF/image text extraction can omit or misread content.
+- Never use these predictions or the heuristic breakdown to make hiring,
+  rejection, or other consequential decisions.

@@ -10,30 +10,37 @@ from preprocess_resume import clean_text
 
 
 BASE_DIR       = Path(__file__).resolve().parent
-MODEL_PATH     = BASE_DIR / "job_role_model.pkl"
-VECTORIZER_PATH= BASE_DIR / "tfidf_vectorizer.pkl"
-LABELS_PATH    = BASE_DIR / "label_classes.pkl"
+MODEL_PATH     = BASE_DIR / "models" / "tfidf_model.pkl"
+VECTORIZER_PATH= BASE_DIR / "models" / "tfidf_vectorizer.pkl"
+LABELS_PATH    = BASE_DIR / "models" / "tfidf_label_classes.pkl"
+LEGACY_PATHS   = (
+    BASE_DIR / "job_role_model.pkl",
+    BASE_DIR / "tfidf_vectorizer.pkl",
+    BASE_DIR / "label_classes.pkl",
+)
 
 
 def _load_artifacts() -> tuple[Any, Any, list[str]]:
-    """Load inference artifacts and report an actionable missing-file error."""
-    missing = [
-        str(path)
-        for path in (MODEL_PATH, VECTORIZER_PATH, LABELS_PATH)
-        if not path.is_file()
-    ]
+    """Load the active ResumeAtlas model, with legacy artifacts as fallback."""
+    active_paths = (MODEL_PATH, VECTORIZER_PATH, LABELS_PATH)
+    paths = (
+        active_paths
+        if all(path.is_file() for path in active_paths)
+        else LEGACY_PATHS
+    )
+    missing = [str(path) for path in paths if not path.is_file()]
     if missing:
         raise FileNotFoundError(
             "Required model artifact(s) not found: "
             + ", ".join(missing)
-            + ". Run train_models.py first."
+            + ". Run train_resume_atlas.py after audit_resume_atlas.py."
         )
 
-    model = joblib.load(MODEL_PATH)
-    vectorizer = joblib.load(VECTORIZER_PATH)
-    label_classes = joblib.load(LABELS_PATH)
+    model = joblib.load(paths[0])
+    vectorizer = joblib.load(paths[1])
+    label_classes = joblib.load(paths[2])
     if not isinstance(label_classes, (list, tuple)):
-        raise ValueError(f"Expected {LABELS_PATH} to contain a list of class labels.")
+        raise ValueError(f"Expected {paths[2]} to contain a list of class labels.")
     return model, vectorizer, list(label_classes)
 
 
