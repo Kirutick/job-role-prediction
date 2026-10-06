@@ -4,6 +4,7 @@ Run locally from the project directory:
     uvicorn app:app --reload
 """
 
+import os
 import shutil
 from contextlib import asynccontextmanager
 from io import BytesIO
@@ -49,10 +50,35 @@ ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff"}
 
 def ensure_tesseract_available() -> None:
     """Fail with a clear message when the system OCR engine is missing."""
-    if shutil.which("tesseract") is None:
+    if pytesseract is None:
+        raise RuntimeError(
+            "Image OCR is unavailable because the Python OCR wrapper is not installed. "
+            "Install pytesseract and the Tesseract system package."
+        )
+
+    if shutil.which("tesseract") is None and os.name == "nt":
+        install_roots = [
+            Path(root)
+            for root in (
+                os.environ.get("ProgramFiles"),
+                os.environ.get("ProgramFiles(x86)"),
+                str(Path(os.environ["LOCALAPPDATA"]) / "Programs")
+                if os.environ.get("LOCALAPPDATA")
+                else None,
+            )
+            if root
+        ]
+        for root in install_roots:
+            executable = root / "Tesseract-OCR" / "tesseract.exe"
+            if executable.is_file():
+                pytesseract.pytesseract.tesseract_cmd = str(executable)
+                break
+
+    configured_executable = Path(pytesseract.pytesseract.tesseract_cmd)
+    if shutil.which("tesseract") is None and not configured_executable.is_file():
         raise RuntimeError(
             "Image OCR is unavailable because the Tesseract OCR system package is not installed. "
-            "On Render, install it during build with: apt-get update && apt-get install -y tesseract-ocr"
+            "Install Tesseract OCR and make the executable available to pytesseract."
         )
 
 
