@@ -94,7 +94,7 @@
                         <h2 id="live-title">Live demo</h2>
                     </div>
                     <div class="live-heading-actions">
-                        <span class="real-model-label"><span class="live-dot"></span> Connected to the real API</span>
+                        <span class="real-model-label" id="backendStatusLabel"><span class="live-dot" id="backendStatusDot"></span> <span id="backendStatusText">Checking backend…</span></span>
                         <button class="button button-quiet presentation-exit hidden" id="presentationExitButton" type="button">Exit Presentation Mode</button>
                     </div>
                 </div>
@@ -207,6 +207,26 @@
             <span>Built as an academic/project demonstration.</span>
         </footer>
     </div>
+    <script src="/demo-confidence.js"></script>
     <script src="/demo/demo.js"></script>
+    <script>
+    // Backend health check — updates the connection status badge in the header.
+    (function checkBackendHealth() {
+        const dot = document.getElementById('backendStatusDot');
+        const text = document.getElementById('backendStatusText');
+        fetch('/health', { method: 'GET', cache: 'no-cache' })
+            .then(function(r) {
+                return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status));
+            })
+            .then(function(data) {
+                if (dot) dot.style.background = '#22c55e';
+                if (text) text.textContent = data.model_loaded ? 'Backend connected' : 'Backend up — model loading';
+            })
+            .catch(function(err) {
+                if (dot) { dot.style.background = '#ef4444'; dot.style.boxShadow = '0 0 6px #ef4444'; }
+                if (text) text.textContent = 'Backend unavailable — start uvicorn';
+            });
+    })();
+    </script>
 </body>
 </html>

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 from pypdf import PdfReader
@@ -232,11 +233,26 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Allow the local frontend (same-origin via iframe or direct navigation) to call
+# the API without CORS issues. Only local development origins are permitted.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost",
+        "http://127.0.0.1",
+    ],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
+
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
+    # Bind to 0.0.0.0 so both http://localhost:8000 and http://127.0.0.1:8000 work.
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)
 
 
 @app.post("/predict", response_model=PredictionResponse)

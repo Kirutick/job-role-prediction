@@ -95,10 +95,10 @@ Open `http://127.0.0.1:8000`. API endpoints:
 The model emits a confidence value only when its classifier provides
 probabilities. The selected class-balanced LinearSVC is not calibrated, so its
 current API confidence is `null`; raw decision scores are not presented as
-calibrated confidence. The existing frontend renders a missing confidence as
-`0%` and has no top-three entries for this model; that display is not a
-calibrated score. The screening breakdown is an independent demo heuristic,
-not model probability or hiring suitability.
+calibrated confidence. The frontend displays a deterministic, role-based
+"Demo Confidence" between 80% and 90% for presentation purposes only; it is
+not model confidence or accuracy. The screening breakdown is an independent
+demo heuristic, not model probability or hiring suitability.
 
 ## Limitations
 

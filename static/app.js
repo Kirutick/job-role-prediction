@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsSection = document.getElementById('resultsSection');
     const predictedRole = document.getElementById('predictedRole');
     const confidence = document.getElementById('confidence');
-    const DISPLAY_MATCH_PERCENT = 90;
     const topPredictionsList = document.getElementById('topPredictionsList');
     const scoreCirclePath = document.getElementById('scoreCirclePath');
     const finalScorePct = document.getElementById('finalScorePct');
@@ -136,7 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFile = null;
 
     // Drag and drop handlers
-    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('click', (event) => {
+        if (event.target !== fileInput) {
+            fileInput.click();
+        }
+    });
     
     uploadZone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -162,7 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleFile(file) {
+        if (!/\.(pdf|png|jpe?g)$/i.test(file.name)) {
+            currentFile = null;
+            fileInput.value = '';
+            uploadZone.querySelector('p').innerHTML = 'Upload your resume or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span>';
+            showError('Please upload a PDF, PNG, or JPG resume.');
+            return;
+        }
+
         currentFile = file;
+        errorBox.classList.add('hidden');
         const p = uploadZone.querySelector('p');
         p.innerHTML = `Selected: <strong>${file.name}</strong><br><span>Click to change</span>`;
         resumeInput.value = ''; // Clear text if file selected
@@ -171,30 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
     resumeInput.addEventListener('input', () => {
         if (resumeInput.value.trim().length > 0 && currentFile) {
             currentFile = null;
-            document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
             const p = uploadZone.querySelector('p');
-            p.innerHTML = `Click to upload or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span>`;
+            p.innerHTML = `Upload your resume or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span>`;
             fileInput.value = '';
         }
-    });
-
-    document.querySelectorAll('.sample-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const url = btn.dataset.sample;
-            const name = btn.dataset.name;
-            try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("Could not fetch " + url);
-                const blob = await res.blob();
-                const file = new File([blob], name, { type: 'application/pdf' });
-                handleFile(file);
-            } catch (err) {
-                showError("Failed to load sample resume: " + err.message);
-            }
-        });
     });
 
     function setLoading(isLoading) {
@@ -251,7 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderResults(result);
 
         } catch (err) {
-            showError(err.message || 'Analysis failed.');
+            const message = err.message === 'Failed to fetch'
+                ? `RoleSignal backend is unavailable. Please make sure the local backend is running (uvicorn app:app --reload) and try again.`
+                : err.message || 'Analysis failed.';
+            showError(message);
         } finally {
             setLoading(false);
         }
@@ -260,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderResults(data) {
         // Primary Prediction
         predictedRole.textContent = data.predicted_role;
-        confidence.textContent = `${DISPLAY_MATCH_PERCENT}% Match`;
+        confidence.textContent = `${window.getRoleSignalDemoConfidence(data.predicted_role)}% Demo Confidence`;
 
         // Top Predictions
         topPredictionsList.innerHTML = '';

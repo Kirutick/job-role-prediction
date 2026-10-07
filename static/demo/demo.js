@@ -98,16 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const matchBadge = document.createElement('span');
         matchBadge.className = 'match-badge';
-        matchBadge.textContent = '90% Match';
+        matchBadge.textContent = `${window.getRoleSignalDemoConfidence(data.predicted_role)}% Demo Confidence`;
         roleLine.appendChild(matchBadge);
         roleBlock.appendChild(roleLine);
-
-        const confidenceNote = document.createElement('div');
-        confidenceNote.className = 'model-confidence-note';
-        confidenceNote.textContent = Number.isFinite(data.confidence)
-            ? `Model confidence: ${(data.confidence * 100).toFixed(1)}%`
-            : 'Model confidence: unavailable for this classifier';
-        roleBlock.appendChild(confidenceNote);
         result.appendChild(roleBlock);
 
         const otherPredictions = Array.isArray(data.top_predictions)
@@ -234,7 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response;
                 }).catch((error) => {
                     window.dispatchEvent(new CustomEvent('rolesignal-demo-request-end', {
-                        detail: { ok: false, error: error.message }
+                        detail: {
+                            ok: false,
+                            error: error.message === 'Failed to fetch'
+                                ? 'RoleSignal backend is unavailable. Please make sure the local backend is running (uvicorn app:app --reload) and try again.'
+                                : error.message
+                        }
                     }));
                     throw error;
                 });

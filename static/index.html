@@ -17,21 +17,12 @@
         <main>
             <div class="input-section">
                 <h2>Analyze Candidate Resume</h2>
-                <p class="subtitle">Paste raw text or drag and drop a PDF/Image.</p>
+                <p class="subtitle">Upload a PDF/Image or paste resume text below.</p>
                 
                 <div class="upload-zone" id="uploadZone">
                     <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" hidden>
                     <div class="upload-icon">📄</div>
-                    <p>Click to upload or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span></p>
-                </div>
-
-                <div class="sample-resumes-bar">
-                    <span class="sample-label">Or load sample resume:</span>
-                    <div class="sample-buttons">
-                        <button type="button" class="sample-btn" id="sampleBtn1" data-sample="/samples/Resume_Alex_Chen_Software_Engineer.pdf" data-name="Resume_Alex_Chen_Software_Engineer.pdf">📄 Resume 1 · Software/Python (PDF)</button>
-                        <button type="button" class="sample-btn" id="sampleBtn2" data-sample="/samples/Resume_Sarah_Patel_Data_Analyst.pdf" data-name="Resume_Sarah_Patel_Data_Analyst.pdf">📄 Resume 2 · Data/Analytics (PDF)</button>
-                        <button type="button" class="sample-btn" id="sampleBtn3" data-sample="/samples/Resume_Emily_Taylor_HR_Manager.pdf" data-name="Resume_Emily_Taylor_HR_Manager.pdf">📄 Resume 3 · HR/Recruitment (PDF)</button>
-                    </div>
+                    <p>Upload your resume or drag and drop<br><span>PDF, PNG, JPG (Max 10MB)</span></p>
                 </div>
 
                 <div class="text-input-container">
@@ -54,7 +45,9 @@
                         <h3>Predicted Role</h3>
                         <div class="primary-prediction">
                             <span id="predictedRole" class="role-name">Software Engineer</span>
-                            <span id="confidence" class="confidence-val">34% Match</span>
+                            <div class="confidence-group">
+                                <span id="confidence" class="confidence-val">88% Demo Confidence</span>
+                            </div>
                         </div>
                         
                         <div class="top-predictions" id="topPredictionsList">
@@ -121,6 +114,7 @@
         </main>
     </div>
     
+    <script src="/demo-confidence.js"></script>
     <script src="/app.js"></script>
 </body>
 </html>
